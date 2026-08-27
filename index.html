@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Contas a Pagar - Grupo Pimentel</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS / XLSX -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- PDF.js para leitura e parsing de PDFs de extrato -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <!-- html2canvas para Captura de Print HD -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- jsPDF para Geração do PDF Executivo Paginado -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        .tab-btn.active {
+            border-bottom: 3px solid #10b981;
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .filter-btn.active {
+            background-color: #0f172a !important;
+            color: #ffffff !important;
+            border-color: #0f172a !important;
+        }
+
+        #relatorioAprovadosCapture, #relatorioAprovadosCapture * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+            header, .no-print, #tabsHeader, #aporteOrigem, #aporteDestino, #aporteValor, button, #modalChequeEspecial, #modalRelatorioAprovados {
+                display: none !important;
+            }
+            .max-w-7xl {
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .shadow-sm, .border {
+                box-shadow: none !important;
+                border-color: #cbd5e1 !important;
+            }
+
+            #sheetDetailView .overflow-x-auto {
+                max-height: none !important;
+                overflow: visible !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#f5f7f9] text-slate-800 font-sans min-h-screen">
+
+    <!-- TELA DE LOGIN CORPORATIVO -->
+    <div id="loginScreen" class="fixed inset-0 bg-slate-950 flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-md p-8 rounded-2xl shadow-2xl space-y-6">
+            <div class="text-center">
+                <span class="inline-block p-3 bg-emerald-100 text-emerald-700 rounded-xl mb-3">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </span>
+                <h2 class="text-xl font-black text-slate-900">GRUPO PIMENTEL</h2>
+                <p class="text-xs text-slate-500 mt-1">Gestão de Contas a Pagar (Seguro e Simultâneo)</p>
+            </div>
+
+            <form onsubmit="realizarLogin(event)" class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">E-mail Corporativo</label>
+                    <input type="email" id="loginEmail" required value="rubensneto@pimentelmochi.com.br" class="w-full text-xs border border-slate-300 rounded-xl px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-700 block mb-1">Senha de Acesso</label>
+                    <input type="password" id="loginSenha" required placeholder="••••••••" class="w-full text-xs border border-slate-300 rounded-xl px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-xl transition shadow-md">
+                    Entrar no Sistema
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APLICAÇÃO PRINCIPAL -->
+    <div id="appContainer" class="hidden max-w-7xl mx-auto p-4 md:p-8">
+
+        <!-- CABEÇALHO -->
+        <header class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6 flex flex-col lg:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Gestão de Contas a Pagar GRUPO PIMENTEL</h1>
+                <p class="text-slate-500 text-sm mt-1">Consolidação de Contas a Pagar e Saldos para Aportes (Sincronizado na Nuvem).</p>
+            </div>
+            
+            <!-- BOTÕES DO TOPO -->
+            <div class="flex flex-row flex-wrap items-center gap-1.5 w-full lg:w-auto">
+                <button onclick="abrirModalRelatorioAprovados()" class="text-[11px] text-emerald-800 hover:text-emerald-950 bg-emerald-100 hover:bg-emerald-200 font-bold px-3 py-2 rounded-xl transition border border-emerald-300 flex items-center gap-1.5 whitespace-nowrap shadow-xs">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Relatório Financeiro
+                </button>
+                <button onclick="window.print()" class="text-[11px] text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 font-semibold px-2.5 py-2 rounded-xl transition border border-slate-300 flex items-center gap-1 whitespace-nowrap">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Imprimir / PDF
+                </button>
+                <button onclick="fazerLogout()" class="text-[11px] text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 font-semibold px-2.5 py-2 rounded-xl transition border border-rose-200 whitespace-nowrap">
+                    Sair (Logout)
+                </button>
+                <label for="excelFile" class="flex items-center justify-center gap-1 cursor-pointer bg-[#10b981] hover:bg-[#0fa071] text-white font-medium px-3 py-2 rounded-xl transition shadow-sm text-[11px] whitespace-nowrap">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <span>Nova Planilha (.xlsx)</span>
+                </label>
+                <input type="file" id="excelFile" accept=".xlsx, .xls" class="hidden">
+            </div>
+        </header>
+
+        <!-- CONTAINER PRINCIPAL -->
+        <div id="dashboardContainer" class="space-y-6">
+
+            <!-- ABAS -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-2 overflow-x-auto flex gap-2 border-b" id="tabsHeader"></div>
+
+            <!-- VISÃO CONSOLIDADA (DASHBOARD GERAL) -->
+            <div id="consolidatedView" class="space-y-6">
+
+                <!-- SEÇÃO SALDOS BANCÁRIOS SICOOB & SIMULADOR DE APORTES -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 border-b border-slate-100 pb-4">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                Posicionamento de Saldos Bancários SICOOB
+                            </h2>
+                            <p class="text-xs text-slate-500">Clique no botão "Cheque Especial" para visualizar/importar o extrato em PDF de cada empresa</p>
+                        </div>
+                        <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-200 flex gap-6">
+                            <div>
+                                <span class="text-[10px] text-slate-500 uppercase font-bold block">Saldo SICOOB Consolidado</span>
+                                <span class="text-lg font-bold" id="totalSaldoSicoob">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GRID DE SALDOS POR EMPRESA -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="sicoobCardsGrid"></div>
+
+                    <!-- SIMULADOR DE APORTE -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4 no-print">
+                        <div class="flex items-center gap-2">
+                            <span class="p-2 bg-[#10b981]/10 text-[#10b981] rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                            </span>
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900">Simulador de Aporte Entre Empresas</h3>
+                                <p class="text-xs text-slate-500">Realize a transferência de saldo entre as contas SICOOB</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                            <select id="aporteOrigem" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
+                            <span class="text-xs text-[#10b981] font-bold">➔</span>
+                            <select id="aporteDestino" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
+                            <input type="text" id="aporteNomenclatura" placeholder="Nomenclatura Automática" readonly class="text-xs border border-slate-300 rounded-lg px-3 py-2 w-56 bg-slate-100 text-slate-600 outline-none">
+                            <input type="number" id="aporteValor" placeholder="Valor R$" class="text-xs border border-slate-300 rounded-lg px-3 py-2 w-28 bg-white outline-none focus:ring-2 focus:ring-[#10b981]">
+                            <button onclick="executarAporteSimulado()" class="bg-[#10b981] hover:bg-[#0fa071] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm">Realizar Aporte</button>
+                        </div>
+                    </div>
+
+                    <!-- HISTÓRICO DE APORTES -->
+                    <div id="historicoAportesContainer" class="hidden bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Aportes Realizados no Dia
+                            </h4>
+                            <span class="text-[11px] text-slate-500 font-medium" id="qtdAportesHoje">0 aportes</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="text-slate-600 border-b border-slate-200">
+                                        <th class="py-1.5 px-2">Hora</th>
+                                        <th class="py-1.5 px-2">Fluxo Principal</th>
+                                        <th class="py-1.5 px-2">Origem (Doadora)</th>
+                                        <th class="py-1.5 px-2">Destino (Recebedora)</th>
+                                        <th class="py-1.5 px-2">Nomenclatura</th>
+                                        <th class="py-1.5 px-2 text-right">Valor (R$)</th>
+                                        <th class="py-1.5 px-2 text-center no-print">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historicoAportesBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARDS KPI -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Contas a Pagar (Aprovados)</p>
+                        <p class="text-3xl font-extrabold text-slate-900 mt-2" id="kpiTotal">R$ 0,00</p>
+                        <p class="text-xs text-slate-500 mt-1">Lançamentos aprovados em aberto</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total de Títulos Aprovados</p>
+                        <p class="text-3xl font-extrabold text-[#10b981] mt-2" id="kpiTitulos">0</p>
+                        <p class="text-xs text-slate-500 mt-1">Títulos prontos para pagamento</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Maior Exposição</p>
+                        <p class="text-3xl font-extrabold text-[#0a363d] mt-2" id="kpiMaiorEmpresa">R$ 0,00</p>
+                        <p class="text-xs text-slate-500 mt-1" id="kpiMaiorEmpresaNome">-</p>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO UNIFICADA: BALANÇO DAS EMPRESAS X CONTAS SICOOB -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0H7m4 0v10"></path></svg>
+                        Balanço das Empresas x Contas SICOOB
+                    </h2>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-[11px] font-bold text-slate-900 uppercase">
+                                <th class="py-3 px-2 text-left">Conta SICOOB</th>
+                                <th class="py-3 px-2">Empresa / Razão Social</th>
+                                <th class="py-3 px-2 text-left">Saldo SICOOB Consolidado</th>
+                                <th class="py-3 px-2 text-right">A Pagar (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryTableBody" class="text-sm"></tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- VISUALIZAÇÃO DE DETALHES DE UMA ABA -->
+            <div id="sheetDetailView" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-slate-900" id="currentSheetName">Empresa</h2>
+                    <span class="text-sm text-slate-500" id="sheetRecordCount">0 títulos</span>
+                </div>
+                <div class="overflow-x-auto max-h-[500px]">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 text-xs uppercase font-semibold text-slate-600" id="detailTableHeader"></thead>
+                        <tbody class="divide-y divide-slate-100" id="detailTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL DO RELATÓRIO FINANCEIRO -->
+    <div id="modalRelatorioAprovados" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-6 z-50 overflow-y-auto">
+        <div class="bg-slate-100 w-full max-w-7xl rounded-2xl shadow-2xl overflow-hidden my-2 flex flex-col max-h-[96vh] h-[95vh]">
+            
+            <div class="bg-slate-900 text-white p-4 flex flex-col sm:flex-row justify-between items-center gap-3 no-print">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                    <h3 class="text-sm font-bold uppercase tracking-wider" id="modalRelatorioTituloHeader">Relatório Geral Financeiro</h3>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="baixarPrintsPorEmpresaHD()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-md flex items-center gap-1.5" title="Gera imagem para cada empresa que possui títulos">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span>Opção 1: Prints de Todas as Empresas (PNG)</span>
+                    </button>
+                    <button onclick="baixarPDFPaginadoExecutivo()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-md flex items-center gap-1.5" title="Gera relatório completo consolidado em PDF A4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        <span>Opção 3: Relatório Paginado Consolidado (PDF)</span>
+                    </button>
+                    <button onclick="fecharModalRelatorioAprovados()" class="text-slate-400 hover:text-white p-1.5 rounded-lg transition ml-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white border-b border-slate-200 px-6 py-3 flex flex-wrap items-center justify-between gap-3 no-print">
+                <span class="text-xs font-bold text-slate-600 uppercase">Filtrar Relatório por:</span>
+                <div class="flex flex-wrap items-center gap-2" id="relatorioFiltrosBtns">
+                    <button onclick="mudarFiltroRelatorio('TODOS', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition active">Todos os Títulos</button>
+                    <button onclick="mudarFiltroRelatorio('Programado', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-sky-300 text-sky-700 bg-sky-50 transition">Apenas Programados</button>
+                    <button onclick="mudarFiltroRelatorio('Aprovado', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-300 text-emerald-700 bg-emerald-50 transition">Apenas Aprovados</button>
+                    <button onclick="mudarFiltroRelatorio('Aguardar', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-amber-300 text-amber-700 bg-amber-50 transition">Aguardar</button>
+                    <button onclick="mudarFiltroRelatorio('Negar', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-300 text-rose-700 bg-rose-50 transition">Negados</button>
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-6 overflow-y-auto flex-1 bg-slate-100">
+                <div id="relatorioAprovadosCapture" class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6 text-slate-800 w-full max-w-full">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-emerald-500 pb-4 gap-2">
+                        <div>
+                            <h2 class="text-2xl font-black text-slate-900 tracking-tight">GRUPO PIMENTEL</h2>
+                            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mt-0.5" id="printSubtituloDoc">Relatório de Títulos Financeiros</p>
+                        </div>
+                        <div class="sm:text-right">
+                            <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full uppercase border border-emerald-300 inline-block" id="printBadgeStatusDoc">Filtro: Todos</span>
+                            <p class="text-[11px] text-slate-400 mt-1" id="printDataGeracao">-</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                            <span class="text-[11px] font-extrabold text-emerald-800 uppercase block">Total Geral Filtrado</span>
+                            <span class="text-2xl font-black text-emerald-950 mt-1 block" id="printTotalGeralVal">R$ 0,00</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <span class="text-[11px] font-extrabold text-slate-600 uppercase block">Quantidade de Títulos</span>
+                            <span class="text-2xl font-black text-slate-900 mt-1 block" id="printTotalGeralQtd">0 títulos</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-3">Resumo por Empresa</h4>
+                        <div class="border border-slate-200 rounded-xl overflow-x-auto shadow-xs">
+                            <table class="w-full text-left text-xs border-collapse min-w-full">
+                                <thead class="bg-slate-100 text-slate-800 font-extrabold border-b border-slate-200 uppercase">
+                                    <tr>
+                                        <th class="py-2.5 px-4">Empresa / Razão Social</th>
+                                        <th class="py-2.5 px-4 text-center">Títulos</th>
+                                        <th class="py-2.5 px-4 text-right">Valor Total (R$)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="printResumoEmpresasBody" class="divide-y divide-slate-100 font-semibold"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-3">Detalhamento dos Lançamentos</h4>
+                        <div class="border border-slate-200 rounded-xl overflow-x-auto shadow-xs">
+                            <table class="w-full text-left text-[12px] border-collapse min-w-full">
+                                <thead class="bg-slate-800 text-white font-extrabold uppercase text-[11px]">
+                                    <tr>
+                                        <th class="py-3 px-3">Empresa</th>
+                                        <th class="py-3 px-3">Vencimento</th>
+                                        <th class="py-3 px-3">Fornecedor / Beneficiário</th>
+                                        <th class="py-3 px-3">Histórico / Descrição</th>
+                                        <th class="py-3 px-3 text-center">Status</th>
+                                        <th class="py-3 px-3">Observações</th>
+                                        <th class="py-3 px-3 text-right">Valor (R$)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="printDetalhamentoBody" class="divide-y divide-slate-100 font-medium"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-3 flex justify-between items-center text-[10px] text-slate-400 font-semibold">
+                        <span>Grupo Pimentel - Sistema Integrado de Gestão Financeira</span>
+                        <span>Documento gerado automaticamente para conferência</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DO SISTEMA COM FIREBASE E GERADORES DE IMAGEM/PDF -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUWh7oMRd1niW7gJ3QuHpK6Cq0m3s7Hs",
+            authDomain: "gestao-contas-a-pagar.firebaseapp.com",
+            projectId: "gestao-contas-a-pagar",
+            storageBucket: "gestao-contas-a-pagar.firebasestorage.app",
+            messagingSenderId: "331798517163",
+            appId: "1:331798517163:web:b5b52083637a9d1602aeee",
+            measurementId: "G-2TR3B28P1V"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        let parsedData = {};
+        let activeTab = 'consolidated';
+        let filtroRelatorioStatus = 'TODOS';
+        
+        const empresasFixas = [
+            "RODRIGO PIMENTEL", "RGP PLANEJADOS S/A", "RP IMOVEIS E NEGOCIOS LTDA", 
+            "SHP COMERCIAL E MONTAGENS LTDA", "PIMENTEL & MOCHI ( Escritório )", "SHORP S/A", 
+            "RP & SHP S/A", "RP AGROPECUARIA LTDA", "TEXAS INVESTIMENTOS E PARTICIPACOES S/A", 
+            "MEOP & PHOP S/A", "PIMENTEL & MOCHI ( RIO CLARO )", "4P PARTICIPACOES S/A"
+        ];
+
+        const contasBancariasInfo = {
+            "RODRIGO PIMENTEL": { tipo: "PF", conta: "417.765-7", cnpj: "701.724.801-59" },
+            "RGP PLANEJADOS S/A": { tipo: "PJ", conta: "419.908-1", cnpj: "23.612.891/0001-32" },
+            "RP IMOVEIS E NEGOCIOS LTDA": { tipo: "PJ", conta: "419.957-0", cnpj: "18.208.068/0001-26" },
+            "SHP COMERCIAL E MONTAGENS LTDA": { tipo: "PJ", conta: "421.139-1", cnpj: "36.716.551/0001-01" },
+            "PIMENTEL & MOCHI ( Escritório )": { tipo: "PJ", conta: "422.362-4", cnpj: "18.251.928/0001-04" },
+            "SHORP S/A": { tipo: "PJ", conta: "422.378-0", cnpj: "12.656.664/0001-92" },
+            "RP & SHP S/A": { tipo: "PJ", conta: "423.011-6", cnpj: "23.429.612/0001-08" },
+            "RP AGROPECUARIA LTDA": { tipo: "PJ", conta: "423.230-5", cnpj: "38.058.661/0001-40" },
+            "TEXAS INVESTIMENTOS E PARTICIPACOES S/A": { tipo: "PJ", conta: "423.793-5", cnpj: "40.150.338/0001-44" },
+            "MEOP & PHOP S/A": { tipo: "PJ", conta: "423.892-3", cnpj: "40.188.851/0001-24" },
+            "PIMENTEL & MOCHI ( RIO CLARO )": { tipo: "PJ", conta: "431.205-8", cnpj: "18.251.928/0004-57" },
+            "4P PARTICIPACOES S/A": { tipo: "PJ", conta: "471.766-0", cnpj: "50.984.473/0001-49" }
+        };
+
+        let sicoobSaldos = {};
+        empresasFixas.forEach(emp => { sicoobSaldos[emp] = 0; });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('appContainer').classList.remove('hidden');
+                iniciarEscutaEmTempoReal();
+            } else {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('appContainer').classList.add('hidden');
+            }
+        });
+
+        window.realizarLogin = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, senha);
+            } catch (err) {
+                console.error("Erro no login:", err.code, err.message);
+                alert("Erro no login: Verifique e-mail e senha cadastrados no Firebase Authentication.");
+            }
+        };
+
+        window.fazerLogout = async function() {
+            await signOut(auth);
+        };
+
+        function iniciarEscutaEmTempoReal() {
+            onSnapshot(collection(db, "sistemaPimentel"), (snapshot) => {
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (docSnap.id === "dadosGerais") {
+                        parsedData = data.parsedData || {};
+                        sicoobSaldos = data.sicoobSaldos || sicoobSaldos;
+                    }
+                });
+                renderSicoobCards();
+                renderTabs();
+                renderConsolidated();
+                if (activeTab !== 'consolidated') renderSheetDetail(activeTab);
+            });
+        }
+
+        async function salvarNaNuvem() {
+            try {
+                await setDoc(doc(db, "sistemaPimentel", "dadosGerais"), { parsedData, sicoobSaldos });
+            } catch (err) {
+                console.error("Erro ao salvar:", err);
+            }
+        }
+
+        function normalizarTexto(texto) {
+            if (!texto) return '';
+            return texto.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\/\.\,\-\_\(\)]/g, " ").replace(/\s+/g, " ").trim().toUpperCase();
+        }
+
+        const mapaEmpresasNormalizadas = {};
+        empresasFixas.forEach(emp => { mapaEmpresasNormalizadas[normalizarTexto(emp)] = emp; });
+
+        function formatDate(val) {
+            if (!val) return '';
+            if (val instanceof Date) return `${String(val.getDate()).padStart(2, '0')}/${String(val.getMonth() + 1).padStart(2, '0')}/${val.getFullYear()}`;
+            if (typeof val === 'number') {
+                const date = new Date((val - (25567 + 2)) * 86400 * 1000);
+                return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+            }
+            return String(val);
+        }
+
+        function parseNumericValue(val) {
+            if (val === null || val === undefined || val === '' || val === '---') return null;
+            if (typeof val === 'number') return val;
+            let strVal = String(val).trim().replace(/[R$\s\-\+]/g, '');
+            if (strVal.includes(',')) strVal = strVal.replace(/\./g, '').replace(',', '.');
+            let num = parseFloat(strVal);
+            return isNaN(num) ? null : num;
+        }
+
+        document.getElementById('excelFile').addEventListener('change', handleFile, false);
+        function handleFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array', cellDates: true, raw: true });
+                parsedData = {};
+
+                workbook.SheetNames.forEach(sheetName => {
+                    const norm = normalizarTexto(sheetName);
+                    let matchedEmpresa = mapaEmpresasNormalizadas[norm];
+                    if (!matchedEmpresa) {
+                        for (let key in mapaEmpresasNormalizadas) {
+                            if (norm.includes(key) || key.includes(norm)) { matchedEmpresa = mapaEmpresasNormalizadas[key]; break; }
+                        }
+                    }
+                    if (!matchedEmpresa) return;
+
+                    const sheet = workbook.Sheets[sheetName];
+                    const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true });
+                    if (!rawRows || rawRows.length === 0) return;
+
+                    let headerIdx = -1;
+                    for (let i = 0; i < rawRows.length; i++) {
+                        const rowStr = rawRows[i].join(' ').toLowerCase();
+                        if (rowStr.includes('vencimento') || rowStr.includes('fornecedor') || rowStr.includes('valor')) { headerIdx = i; break; }
+                    }
+
+                    if (headerIdx !== -1) {
+                        let rawHeaders = rawRows[headerIdx].map(h => String(h || '').trim());
+                        let originalHeaders = rawHeaders.filter(h => !h.toLowerCase().includes('observa') && !h.toLowerCase().includes('status'));
+                        let headers = [...originalHeaders, 'Status', 'Observação'];
+                        let valorColIdx = originalHeaders.findIndex(h => h.toLowerCase().includes('valor'));
+                        let vencColIdx = originalHeaders.findIndex(h => h.toLowerCase().includes('vencimento') || h.toLowerCase().includes('venc'));
+                        
+                        let fornecedorColIdx = originalHeaders.findIndex(h => {
+                            let normH = normalizarTexto(h);
+                            return normH.includes('FORNECEDOR') || normH.includes('BENEFICIARIO') || normH.includes('NOME') || normH.includes('RAZAO');
+                        });
+                        let historicoColIdx = originalHeaders.findIndex(h => {
+                            let normH = normalizarTexto(h);
+                            return normH.includes('HISTORICO') || normH.includes('DESCRICAO');
+                        });
+
+                        const rows = [];
+                        for (let i = headerIdx + 1; i < rawRows.length; i++) {
+                            const row = rawRows[i];
+                            if (!row || row.length === 0) continue;
+                            let rawVal = valorColIdx !== -1 ? row[valorColIdx] : null;
+                            let numVal = parseNumericValue(rawVal);
+                            let lineText = row.join(' ').toUpperCase();
+                            if (lineText.includes('TOTAL DA EMPRESA') || lineText.includes('SUBTOTAL')) continue;
+
+                            if (numVal !== null && numVal > 0) {
+                                let newRowData = originalHeaders.map((_, colI) => row[colI] !== undefined ? row[colI] : '');
+                                newRowData.push('Programado');
+                                newRowData.push('');
+                                rows.push({
+                                    id: i, headers, data: newRowData, valor: numVal,
+                                    vencimentoIdx: vencColIdx, valorIdx: valorColIdx,
+                                    fornecedorIdx: fornecedorColIdx, historicoIdx: historicoColIdx,
+                                    fornecedorVal: fornecedorColIdx !== -1 ? String(row[fornecedorColIdx] || '').trim() : '',
+                                    historicoVal: historicoColIdx !== -1 ? String(row[historicoColIdx] || '').trim() : '',
+                                    statusIdx: headers.length - 2, obsIdx: headers.length - 1,
+                                    status: 'Programado', observacao: ''
+                                });
+                            }
+                        }
+                        if (rows.length > 0) parsedData[matchedEmpresa] = { headers, rows };
+                    }
+                });
+
+                salvarNaNuvem();
+                alert('Planilha importada e sincronizada com sucesso!');
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        window.mudarFiltroRelatorio = function(filtro, btn) {
+            filtroRelatorioStatus = filtro;
+            document.querySelectorAll('#relatorioFiltrosBtns button').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            renderConteudoRelatorioModal();
+        }
+
+        window.abrirModalRelatorioAprovados = function() {
+            renderConteudoRelatorioModal();
+            document.getElementById('modalRelatorioAprovados').classList.remove('hidden');
+        }
+
+        window.fecharModalRelatorioAprovados = function() {
+            document.getElementById('modalRelatorioAprovados').classList.add('hidden');
+        }
+
+        function renderConteudoRelatorioModal() {
+            const agora = new Date();
+            document.getElementById('printDataGeracao').innerText = `Gerado em: ${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR')}`;
+            let grandTotalVal = 0, grandTotalQtd = 0;
+            const tbodyResumo = document.getElementById('printResumoEmpresasBody');
+            const tbodyDetalhes = document.getElementById('printDetalhamentoBody');
+            tbodyResumo.innerHTML = ''; tbodyDetalhes.innerHTML = '';
+
+            let txtFiltro = "Todos os Lançamentos";
+            if (filtroRelatorioStatus === 'Programado') txtFiltro = "Apenas Programados";
+            if (filtroRelatorioStatus === 'Aprovado') txtFiltro = "Apenas Aprovados";
+            if (filtroRelatorioStatus === 'Aguardar') txtFiltro = "Em Aguardo";
+            if (filtroRelatorioStatus === 'Negar') txtFiltro = "Negados";
+
+            document.getElementById('printBadgeStatusDoc').innerText = `Filtro: ${txtFiltro}`;
+
+            empresasFixas.forEach(empresa => {
+                const sheetObj = parsedData[empresa];
+                let empTotalVal = 0, empTotalQtd = 0;
+                if (sheetObj && sheetObj.rows) {
+                    const lista = sheetObj.rows.filter(r => filtroRelatorioStatus === 'TODOS' || (r.status || 'Programado') === filtroRelatorioStatus);
+                    empTotalQtd = lista.length;
+                    empTotalVal = lista.reduce((s, r) => s + r.valor, 0);
+
+                    lista.forEach(r => {
+                        let venc = r.vencimentoIdx !== -1 && r.data[r.vencimentoIdx] ? formatDate(r.data[r.vencimentoIdx]) : '-';
+                        let forn = r.fornecedorVal || '-';
+                        let hist = r.historicoVal || '-';
+                        let badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;';
+                        if (r.status === 'Aprovado') badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;';
+                        if (r.status === 'Aguardar') badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d;';
+                        if (r.status === 'Negar') badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #ffe4e6; color: #9f1239; border: 1px solid #fda4af;';
+
+                        tbodyDetalhes.innerHTML += `
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-3 font-bold text-slate-800 uppercase" style="vertical-align: middle;">${empresa}</td>
+                                <td class="py-3 px-3 text-slate-600 whitespace-nowrap" style="vertical-align: middle;">${venc}</td>
+                                <td class="py-3 px-3 font-semibold text-slate-900" style="vertical-align: middle;">${forn}</td>
+                                <td class="py-3 px-3 text-slate-600" style="vertical-align: middle;">${hist}</td>
+                                <td class="py-3 px-3 text-center whitespace-nowrap" style="vertical-align: middle;"><span style="${badgeStyle}">${r.status || 'Programado'}</span></td>
+                                <td class="py-3 px-3 text-slate-600 italic font-medium" style="vertical-align: middle;">${r.observacao || '-'}</td>
+                                <td class="py-3 px-3 text-right font-bold text-emerald-700 whitespace-nowrap" style="vertical-align: middle;">${r.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                            </tr>
+                        `;
+                    });
+                }
+                grandTotalVal += empTotalVal; grandTotalQtd += empTotalQtd;
+                tbodyResumo.innerHTML += `<tr><td class="py-2.5 px-4 font-bold uppercase">${empresa}</td><td class="py-2.5 px-4 text-center">${empTotalQtd}</td><td class="py-2.5 px-4 text-right">${empTotalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td></tr>`;
+            });
+            document.getElementById('printTotalGeralVal').innerText = grandTotalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('printTotalGeralQtd').innerText = `${grandTotalQtd} títulos`;
+        }
+
+        // GERADOR DE IMAGENS EM ALTA RESOLUÇÃO (PNG) PARA WHATSAPP COM LEGENDA CURTA
+        window.baixarPrintsPorEmpresaHD = async function() {
+            const { jsPDF } = window.jspdf;
+            const dataHoje = new Date().toISOString().slice(0, 10);
+            
+            const empresasComTitulos = empresasFixas.filter(empresa => {
+                const sheetObj = parsedData[empresa];
+                if (!sheetObj || !sheetObj.rows) return false;
+                const lista = sheetObj.rows.filter(r => filtroRelatorioStatus === 'TODOS' || (r.status || 'Programado') === filtroRelatorioStatus);
+                return lista.length > 0;
+            });
+
+            if (empresasComTitulos.length === 0) {
+                alert('Nenhuma empresa possui títulos para o filtro selecionado.');
+                return;
+            }
+
+            for (let i = 0; i < empresasComTitulos.length; i++) {
+                const empresa = empresasComTitulos[i];
+                const sheetObj = parsedData[empresa];
+                const listaFiltrada = sheetObj.rows.filter(r => filtroRelatorioStatus === 'TODOS' || (r.status || 'Programado') === filtroRelatorioStatus);
+
+                const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
+                const empTotalVal = listaFiltrada.reduce((sum, r) => sum + r.valor, 0);
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16);
+                doc.setTextColor(15, 23, 42);
+                doc.text("GRUPO PIMENTEL", 14, 15);
+
+                doc.setFontSize(9);
+                doc.setTextColor(100, 116, 139);
+                doc.text(`GESTÃO FINANCEIRA - ${empresa.toUpperCase()}`, 14, 21);
+
+                doc.setFillColor(209, 250, 229);
+                doc.setDrawColor(167, 243, 208);
+                doc.roundedRect(245, 10, 38, 7, 3, 3, 'FD');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8);
+                doc.setTextColor(6, 95, 70);
+                doc.text("Aprovação Direção", 264, 14.5, { align: 'center' });
+
+                doc.setDrawColor(16, 185, 129);
+                doc.setLineWidth(0.5);
+                doc.line(14, 25, 283, 25);
+
+                doc.setFillColor(236, 253, 245);
+                doc.setDrawColor(167, 243, 208);
+                doc.roundedRect(14, 29, 269, 12, 2, 2, 'FD');
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.setTextColor(6, 95, 70);
+                doc.text("EMPRESA:", 18, 36);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(15, 23, 42);
+                doc.text(empresa, 38, 36);
+
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(6, 95, 70);
+                doc.text(`TOTAL GERAL (${listaFiltrada.length} TÍTULOS):`, 200, 36);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(6, 95, 70);
+                doc.text(empTotalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), 278, 36, { align: 'right' });
+
+                let startY = 46;
+                let headers = ["VENCIMENTO", "FORNECEDOR / BENEFICIÁRIO", "HISTÓRICO / DESCRIÇÃO", "STATUS", "OBSERVAÇÕES", "VALOR (R$)"];
+                let colWidths = [28, 65, 100, 26, 25, 25];
+                let startX = 14;
+
+                doc.setFillColor(15, 23, 42);
+                doc.rect(startX, startY, 269, 7, 'F');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8);
+                doc.setTextColor(255, 255, 255);
+
+                let currentX = startX;
+                headers.forEach((h, idx) => {
+                    let align = (idx === 5) ? 'right' : ((idx === 3) ? 'center' : 'left');
+                    let textX = currentX + 2;
+                    if (align === 'right') textX = currentX + colWidths[idx] - 2;
+                    if (align === 'center') textX = currentX + (colWidths[idx] / 2);
+                    doc.text(h, textX, startY + 4.5, { align: align });
+                    currentX += colWidths[idx];
+                });
+
+                startY += 7;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+
+                listaFiltrada.forEach((r, rowIndex) => {
+                    let venc = r.vencimentoIdx !== -1 && r.data[r.vencimentoIdx] ? formatDate(r.data[r.vencimentoIdx]) : '-';
+                    let forn = r.fornecedorVal || '-';
+                    let hist = r.historicoVal || '-';
+                    let obs = r.observacao || '-';
+                    let statusVal = r.status || 'Programado';
+
+                    let histLines = doc.splitTextToSize(hist, colWidths[2] - 4);
+                    let fornLines = doc.splitTextToSize(forn, colWidths[1] - 4);
+                    let obsLines = doc.splitTextToSize(obs, colWidths[4] - 4);
+                    
+                    let maxLines = Math.max(histLines.length, fornLines.length, obsLines.length, 1);
+                    let rowHeight = Math.max(7, maxLines * 4 + 3);
+
+                    if (rowIndex % 2 === 0) {
+                        doc.setFillColor(248, 250, 252);
+                        doc.rect(startX, startY, 269, rowHeight, 'F');
+                    }
+
+                    doc.setDrawColor(226, 232, 240);
+                    doc.setLineWidth(0.1);
+                    doc.rect(startX, startY, 269, rowHeight);
+
+                    doc.setTextColor(51, 65, 85);
+                    doc.text(venc, startX + 2, startY + 4.5);
+                    doc.text(fornLines, startX + colWidths[0] + 2, startY + 4.5);
+                    doc.text(histLines, startX + colWidths[0] + colWidths[1] + 2, startY + 4.5);
+
+                    let badgeX = startX + colWidths[0] + colWidths[1] + colWidths[2] + 2;
+                    let badgeY = startY + (rowHeight / 2) - 3;
+                    doc.setFillColor(224, 242, 254);
+                    doc.setDrawColor(186, 230, 253);
+                    if (statusVal === 'Aprovado') { doc.setFillColor(209, 250, 229); doc.setDrawColor(167, 243, 208); }
+                    if (statusVal === 'Aguardar') { doc.setFillColor(254, 243, 199); doc.setDrawColor(252, 211, 77); }
+                    if (statusVal === 'Negar') { doc.setFillColor(255, 228, 230); doc.setDrawColor(254, 205, 211); }
+                    
+                    doc.roundedRect(badgeX, badgeY, 22, 6, 1.5, 1.5, 'FD');
+                    
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(7);
+                    doc.setTextColor(3, 105, 161);
+                    if (statusVal === 'Aprovado') doc.setTextColor(6, 95, 70);
+                    if (statusVal === 'Aguardar') doc.setTextColor(146, 64, 14);
+                    if (statusVal === 'Negar') doc.setTextColor(159, 18, 57);
+                    
+                    doc.text(statusVal, badgeX + 11, badgeY + 4, { align: 'center' });
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(8);
+                    doc.setTextColor(51, 65, 85);
+
+                    doc.text(obsLines, badgeX + colWidths[3] + 2, startY + 4.5);
+                    
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(4, 120, 87);
+                    let valStr = r.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    doc.text(valStr, startX + 269 - 2, startY + 4.5, { align: 'right' });
+                    doc.setFont("helvetica", "normal");
+
+                    startY += rowHeight;
+                });
+
+                doc.setDrawColor(203, 213, 225);
+                doc.setLineWidth(0.2);
+                doc.line(14, 198, 283, 198);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(100, 116, 139);
+                doc.text("Grupo Pimentel - Relatório de Gestão Financeira", 14, 203);
+
+                const pdfBlob = doc.output('blob');
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                
+                const loadingPdf = await pdfjsLib.getDocument(pdfUrl).promise;
+                const page = await loadingPdf.getPage(1);
+                const viewport = page.getViewport({ scale: 4.5 });
+                
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                let nomeEmpresaLimpo = empresa.replace(/[^a-zA-Z0-9]/g, '_');
+                let fileName = `Relatorio_${filtroRelatorioStatus}_${nomeEmpresaLimpo}_${dataHoje}.png`;
+
+                await new Promise((resolve) => {
+                    canvas.toBlob((blob) => {
+                        const link = document.createElement('a');
+                        link.download = fileName;
+                        link.href = URL.createObjectURL(blob);
+                        link.click();
+                        setTimeout(resolve, 800);
+                    }, 'image/png', 1.0);
+                });
+            }
+
+            alert(`Processo concluído! As imagens de todas as ${empresasComTitulos.length} empresas foram baixadas com nitidez máxima.`);
+        };
+
+        // GERADOR DE RELATÓRIO PDF EXECUTIVO PAGINADO
+        window.baixarPDFPaginadoExecutivo = async function() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
+            const dataHoje = new Date().toISOString().slice(0, 10);
+
+            let temDados = false;
+            let firstPage = true;
+
+            for (const empresa of empresasFixas) {
+                const sheetObj = parsedData[empresa];
+                if (!sheetObj || !sheetObj.rows) continue;
+
+                const listaFiltrada = sheetObj.rows.filter(r => filtroRelatorioStatus === 'TODOS' || (r.status || 'Programado') === filtroRelatorioStatus);
+                if (listaFiltrada.length === 0) continue;
+
+                temDados = true;
+                if (!firstPage) doc.addPage();
+                firstPage = false;
+
+                const empTotalVal = listaFiltrada.reduce((sum, r) => sum + r.valor, 0);
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16);
+                doc.setTextColor(15, 23, 42);
+                doc.text("GRUPO PIMENTEL", 14, 15);
+
+                doc.setFontSize(9);
+                doc.setTextColor(100, 116, 139);
+                doc.text(`RELATÓRIO FINANCEIRO - FILTRO: ${filtroRelatorioStatus.toUpperCase()}`, 14, 21);
+
+                doc.setFillColor(209, 250, 229);
+                doc.setDrawColor(167, 243, 208);
+                doc.roundedRect(245, 10, 38, 7, 3, 3, 'FD');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8);
+                doc.setTextColor(6, 95, 70);
+                doc.text("Aprovação Direção", 264, 14.5, { align: 'center' });
+
+                doc.setDrawColor(16, 185, 129);
+                doc.setLineWidth(0.5);
+                doc.line(14, 25, 283, 25);
+
+                doc.setFillColor(236, 253, 245);
+                doc.setDrawColor(167, 243, 208);
+                doc.roundedRect(14, 29, 269, 12, 2, 2, 'FD');
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.setTextColor(6, 95, 70);
+                doc.text("EMPRESA:", 18, 36);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(15, 23, 42);
+                doc.text(empresa, 38, 36);
+
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(6, 95, 70);
+                doc.text(`TOTAL (${listaFiltrada.length} TÍTULOS):`, 200, 36);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(6, 95, 70);
+                doc.text(empTotalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), 278, 36, { align: 'right' });
+
+                let startY = 46;
+                let headers = ["VENCIMENTO", "FORNECEDOR", "HISTÓRICO", "STATUS", "OBS", "VALOR (R$)"];
+                let colWidths = [28, 65, 100, 26, 25, 25];
+                let startX = 14;
+
+                doc.setFillColor(15, 23, 42);
+                doc.rect(startX, startY, 269, 7, 'F');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8);
+                doc.setTextColor(255, 255, 255);
+
+                let currentX = startX;
+                headers.forEach((h, idx) => {
+                    let align = (idx === 5) ? 'right' : ((idx === 3) ? 'center' : 'left');
+                    let textX = currentX + 2;
+                    if (align === 'right') textX = currentX + colWidths[idx] - 2;
+                    if (align === 'center') textX = currentX + (colWidths[idx] / 2);
+                    doc.text(h, textX, startY + 4.5, { align: align });
+                    currentX += colWidths[idx];
+                });
+
+                startY += 7;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+
+                listaFiltrada.forEach((r, rowIndex) => {
+                    let venc = r.vencimentoIdx !== -1 && r.data[r.vencimentoIdx] ? formatDate(r.data[r.vencimentoIdx]) : '-';
+                    let forn = r.fornecedorVal || '-';
+                    let hist = r.historicoVal || '-';
+                    let obs = r.observacao || '-';
+                    let statusVal = r.status || 'Programado';
+
+                    let histLines = doc.splitTextToSize(hist, colWidths[2] - 4);
+                    let fornLines = doc.splitTextToSize(forn, colWidths[1] - 4);
+                    let obsLines = doc.splitTextToSize(obs, colWidths[4] - 4);
+                    
+                    let maxLines = Math.max(histLines.length, fornLines.length, obsLines.length, 1);
+                    let rowHeight = Math.max(7, maxLines * 4 + 3);
+
+                    if (startY + rowHeight > 190) {
+                        doc.setDrawColor(203, 213, 225);
+                        doc.setLineWidth(0.2);
+                        doc.line(14, 198, 283, 198);
+                        doc.setFont("helvetica", "normal");
+                        doc.setFontSize(8);
+                        doc.setTextColor(100, 116, 139);
+                        doc.text("Grupo Pimentel - Relatório de Gestão Financeira", 14, 203);
+                        doc.addPage();
+                        startY = 15;
+                    }
+
+                    if (rowIndex % 2 === 0) {
+                        doc.setFillColor(248, 250, 252);
+                        doc.rect(startX, startY, 269, rowHeight, 'F');
+                    }
+
+                    doc.setDrawColor(226, 232, 240);
+                    doc.setLineWidth(0.1);
+                    doc.rect(startX, startY, 269, rowHeight);
+
+                    doc.setTextColor(51, 65, 85);
+                    doc.text(venc, startX + 2, startY + 4.5);
+                    doc.text(fornLines, startX + colWidths[0] + 2, startY + 4.5);
+                    doc.text(histLines, startX + colWidths[0] + colWidths[1] + 2, startY + 4.5);
+
+                    let badgeX = startX + colWidths[0] + colWidths[1] + colWidths[2] + 2;
+                    let badgeY = startY + (rowHeight / 2) - 3;
+                    doc.setFillColor(224, 242, 254);
+                    doc.setDrawColor(186, 230, 253);
+                    if (statusVal === 'Aprovado') { doc.setFillColor(209, 250, 229); doc.setDrawColor(167, 243, 208); }
+                    if (statusVal === 'Aguardar') { doc.setFillColor(254, 243, 199); doc.setDrawColor(252, 211, 77); }
+                    if (statusVal === 'Negar') { doc.setFillColor(255, 228, 230); doc.setDrawColor(254, 205, 211); }
+                    
+                    doc.roundedRect(badgeX, badgeY, 22, 6, 1.5, 1.5, 'FD');
+                    
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(7);
+                    doc.setTextColor(3, 105, 161);
+                    if (statusVal === 'Aprovado') doc.setTextColor(6, 95, 70);
+                    if (statusVal === 'Aguardar') doc.setTextColor(146, 64, 14);
+                    if (statusVal === 'Negar') doc.setTextColor(159, 18, 57);
+                    
+                    doc.text(statusVal, badgeX + 11, badgeY + 4, { align: 'center' });
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(8);
+                    doc.setTextColor(51, 65, 85);
+
+                    doc.text(obsLines, badgeX + colWidths[3] + 2, startY + 4.5);
+                    
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(4, 120, 87);
+                    let valStr = r.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    doc.text(valStr, startX + 269 - 2, startY + 4.5, { align: 'right' });
+                    doc.setFont("helvetica", "normal");
+
+                    startY += rowHeight;
+                });
+
+                doc.setDrawColor(203, 213, 225);
+                doc.setLineWidth(0.2);
+                doc.line(14, 198, 283, 198);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(100, 116, 139);
+                doc.text("Grupo Pimentel - Relatório de Gestão Financeira", 14, 203);
+            }
+
+            if (temDados) {
+                doc.save(`Relatorio_${filtroRelatorioStatus}_Pimentel_${dataHoje}.pdf`);
+            } else {
+                alert('Nenhum título encontrado para o filtro selecionado.');
+            }
+        };
+
+        window.updateRowStatus = function(sheetName, rowIndex, newStatus) {
+            if (parsedData[sheetName] && parsedData[sheetName].rows) {
+                const rowObj = parsedData[sheetName].rows.find(r => r.id === rowIndex);
+                if (rowObj) { rowObj.status = newStatus; rowObj.data[rowObj.statusIdx] = newStatus; }
+            }
+            salvarNaNuvem();
+        };
+
+        window.updateRowObs = function(sheetName, rowIndex, newObs) {
+            if (parsedData[sheetName] && parsedData[sheetName].rows) {
+                const rowObj = parsedData[sheetName].rows.find(r => r.id === rowIndex);
+                if (rowObj) { rowObj.observacao = newObs; rowObj.data[rowObj.obsIdx] = newObs; }
+            }
+            salvarNaNuvem();
+        };
+
+        function renderSicoobCards() {
+            const grid = document.getElementById('sicoobCardsGrid');
+            grid.innerHTML = '';
+            let totalSaldo = 0;
+            empresasFixas.forEach(emp => {
+                let val = sicoobSaldos[emp] || 0;
+                totalSaldo += val;
+                grid.innerHTML += `
+                    <div class="p-3 rounded-xl border border-slate-200 bg-[#f8fafc] flex flex-col justify-between gap-2">
+                        <span class="text-[11px] font-bold text-[#1e293b] uppercase truncate">${emp}</span>
+                        <input type="text" value="${val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}" 
+                            onfocus="this.value='${val}'; this.select();" 
+                            onblur="updateSaldo('${emp}', this.value)" 
+                            class="w-full text-xs font-bold bg-white border border-slate-300 rounded-md px-2 py-1 outline-none">
+                    </div>`;
+            });
+            document.getElementById('totalSaldoSicoob').innerText = totalSaldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        window.updateSaldo = function(empresa, valStr) {
+            sicoobSaldos[empresa] = parseNumericValue(valStr) || 0;
+            salvarNaNuvem();
+        };
+
+        function renderTabs() {
+            const tabsHeader = document.getElementById('tabsHeader');
+            tabsHeader.innerHTML = `<button class="tab-btn px-4 py-2 text-sm font-medium rounded-lg ${activeTab === 'consolidated' ? 'active' : ''}" onclick="switchTab('consolidated', this)">📊 Dashboard Geral</button>`;
+            empresasFixas.forEach(sheetName => {
+                tabsHeader.innerHTML += `<button class="tab-btn px-4 py-2 text-sm font-medium rounded-lg ${activeTab === sheetName ? 'active' : ''}" onclick="switchTab('${sheetName}', this)">${sheetName}</button>`;
+            });
+        }
+
+        window.switchTab = function(sheetName, element) {
+            activeTab = sheetName;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if (element) element.classList.add('active');
+            if (sheetName === 'consolidated') {
+                document.getElementById('consolidatedView').classList.remove('hidden');
+                document.getElementById('sheetDetailView').classList.add('hidden');
+            } else {
+                document.getElementById('consolidatedView').classList.add('hidden');
+                document.getElementById('sheetDetailView').classList.remove('hidden');
+                renderSheetDetail(sheetName);
+            }
+        };
+
+        function renderConsolidated() {
+            let totalGeral = 0, totalTitulos = 0;
+            const summaryData = [];
+            empresasFixas.forEach(empresa => {
+                const item = parsedData[empresa];
+                let sheetTotal = 0, sheetCount = 0;
+                if (item && item.rows) {
+                    let aprovados = item.rows.filter(r => (r.status || 'Programado') === 'Aprovado');
+                    sheetTotal = aprovados.reduce((s, r) => s + r.valor, 0);
+                    sheetCount = aprovados.length;
+                }
+                summaryData.push({ empresa, total: sheetTotal, titulos: sheetCount, saldo: (sicoobSaldos[empresa] || 0) - sheetTotal });
+                totalGeral += sheetTotal; totalTitulos += sheetCount;
+            });
+            document.getElementById('kpiTotal').innerText = totalGeral.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('kpiTitulos').innerText = totalTitulos;
+
+            const tbody = document.getElementById('summaryTableBody');
+            tbody.innerHTML = '';
+            summaryData.forEach(item => {
+                const info = contasBancariasInfo[item.empresa] || { conta: '-', cnpj: '-' };
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50">
+                        <td class="py-3 px-2">Conta ${info.conta} (${info.cnpj})</td>
+                        <td class="py-3 px-2 font-bold uppercase text-xs">${item.empresa}</td>
+                        <td class="py-3 px-2 font-bold ${item.saldo < 0 ? 'text-rose-600' : 'text-emerald-600'}">${item.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td class="py-3 px-2 text-right font-bold">${item.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    </tr>`;
+            });
+        }
+
+        function renderSheetDetail(sheetName) {
+            const sheetObj = parsedData[sheetName];
+            const thead = document.getElementById('detailTableHeader');
+            const tbody = document.getElementById('detailTableBody');
+            thead.innerHTML = ''; tbody.innerHTML = '';
+            if (!sheetObj || !sheetObj.rows) return;
+
+            document.getElementById('currentSheetName').innerText = `Empresa: ${sheetName}`;
+            document.getElementById('sheetRecordCount').innerText = `${sheetObj.rows.length} títulos`;
+            
+            let hTr = '<tr>';
+            sheetObj.headers.forEach(h => hTr += `<th class="py-2 px-3">${h}</th>`);
+            thead.innerHTML = hTr + '</tr>';
+
+            sheetObj.rows.forEach(r => {
+                let tr = '<tr>';
+                sheetObj.headers.forEach((h, idx) => {
+                    if (idx === r.statusIdx) {
+                        tr += `<td><select onchange="updateRowStatus('${sheetName}', ${r.id}, this.value)" class="text-xs font-bold rounded px-2 py-1 bg-sky-50 border"><option value="Programado" ${r.status==='Programado'?'selected':''}>Programado</option><option value="Aprovado" ${r.status==='Aprovado'?'selected':''}>Aprovado</option><option value="Aguardar" ${r.status==='Aguardar'?'selected':''}>Aguardar</option><option value="Negar" ${r.status==='Negar'?'selected':''}>Negar</option></select></td>`;
+                    } else if (idx === r.obsIdx) {
+                        tr += `<td><input type="text" value="${r.observacao || ''}" onblur="updateRowObs('${sheetName}', ${r.id}, this.value)" class="text-xs border rounded px-2 py-1 w-full"></td>`;
+                    } else {
+                        let val = r.data[idx];
+                        if (idx === r.vencimentoIdx) val = formatDate(val);
+                        if (idx === r.valorIdx) val = r.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                        tr += `<td class="py-2 px-3">${val || ''}</td>`;
+                    }
+                });
+                tbody.innerHTML += tr + '</tr>';
+            });
+        }
+    </script>
+</body>
+</html>
