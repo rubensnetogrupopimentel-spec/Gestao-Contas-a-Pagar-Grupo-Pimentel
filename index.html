@@ -139,7 +139,7 @@
                                 <svg class="w-5 h-5 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                                 Posicionamento de Saldos Bancários SICOOB
                             </h2>
-                            <p class="text-xs text-slate-500">Clique no botão "Cheque Especial" para visualizar/importar o extrato em PDF de cada empresa</p>
+                            <p class="text-xs text-slate-500">Clique no campo de saldo de cada empresa para atualizar o valor</p>
                         </div>
                         <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-200 flex gap-6">
                             <div>
@@ -428,13 +428,13 @@
 
         window.realizarLogin = async function(e) {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
+            const email = document.getElementById('loginEmail').value.trim();
             const senha = document.getElementById('loginSenha').value;
             try {
                 await signInWithEmailAndPassword(auth, email, senha);
             } catch (err) {
-                console.error("Erro no login:", err.code, err.message);
-                alert("Erro no login: Verifique e-mail e senha cadastrados no Firebase Authentication.");
+                console.error("FALHA DETALHADA DO FIREBASE AUTH:", err.code, err.message);
+                alert("Erro no login (" + err.code + "): Verifique e-mail e senha cadastrados no Firebase Authentication.");
             }
         };
 
