@@ -139,7 +139,7 @@
                                 <svg class="w-5 h-5 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                                 Posicionamento de Saldos Bancários SICOOB
                             </h2>
-                            <p class="text-xs text-slate-500">Clique no botão "Cheque Especial" para visualizar/importar o extrato em PDF de cada empresa</p>
+                            <p class="text-xs text-slate-500">Insira ou edite os saldos diretamente nos campos abaixo</p>
                         </div>
                         <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-200 flex gap-6">
                             <div>
@@ -165,9 +165,9 @@
                         </div>
 
                         <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                            <select id="aporteOrigem" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
+                            <select id="aporteOrigem" onchange="atualizarNomenclaturaAporte()" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
                             <span class="text-xs text-[#10b981] font-bold">➔</span>
-                            <select id="aporteDestino" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
+                            <select id="aporteDestino" onchange="atualizarNomenclaturaAporte()" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
                             <input type="text" id="aporteNomenclatura" placeholder="Nomenclatura Automática" readonly class="text-xs border border-slate-300 rounded-lg px-3 py-2 w-56 bg-slate-100 text-slate-600 outline-none">
                             <input type="number" id="aporteValor" placeholder="Valor R$" class="text-xs border border-slate-300 rounded-lg px-3 py-2 w-28 bg-white outline-none focus:ring-2 focus:ring-[#10b981]">
                             <button onclick="executarAporteSimulado()" class="bg-[#10b981] hover:bg-[#0fa071] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm">Realizar Aporte</button>
@@ -188,7 +188,6 @@
                                 <thead>
                                     <tr class="text-slate-600 border-b border-slate-200">
                                         <th class="py-1.5 px-2">Hora</th>
-                                        <th class="py-1.5 px-2">Fluxo Principal</th>
                                         <th class="py-1.5 px-2">Origem (Doadora)</th>
                                         <th class="py-1.5 px-2">Destino (Recebedora)</th>
                                         <th class="py-1.5 px-2">Nomenclatura</th>
@@ -233,7 +232,8 @@
                                 <th class="py-3 px-2 text-left">Conta SICOOB</th>
                                 <th class="py-3 px-2">Empresa / Razão Social</th>
                                 <th class="py-3 px-2 text-left">Saldo SICOOB Consolidado</th>
-                                <th class="py-3 px-2 text-right">A Pagar (R$)</th>
+                                <th class="py-3 px-2 text-right">A Pagar (R$) [Aprovados]</th>
+                                <th class="py-3 px-2 text-right">Balanço Final (R$)</th>
                             </tr>
                         </thead>
                         <tbody id="summaryTableBody" class="text-sm"></tbody>
@@ -371,7 +371,7 @@
         import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey:"AIzaSyCUwHh7oMRd1niW7gjQ3huPk6Cq0m3s7Hs",
+            apiKey: "AIzaSyCUwHh7oMRd1niW7gjQ3huPk6Cq0m3s7Hs",
             authDomain: "gestao-contas-a-pagar.firebaseapp.com",
             projectId: "gestao-contas-a-pagar",
             storageBucket: "gestao-contas-a-pagar.firebasestorage.app",
@@ -389,6 +389,7 @@
         let parsedData = {};
         let activeTab = 'consolidated';
         let filtroRelatorioStatus = 'TODOS';
+        let historicoAportes = [];
         
         const empresasFixas = [
             "RODRIGO PIMENTEL", "RGP PLANEJADOS S/A", "RP IMOVEIS E NEGOCIOS LTDA", 
@@ -449,9 +450,12 @@
                     if (docSnap.id === "dadosGerais") {
                         parsedData = data.parsedData || {};
                         sicoobSaldos = data.sicoobSaldos || sicoobSaldos;
+                        historicoAportes = data.historicoAportes || [];
                     }
                 });
                 renderSicoobCards();
+                popularSelectsAporte();
+                renderHistoricoAportes();
                 renderTabs();
                 renderConsolidated();
                 if (activeTab !== 'consolidated') renderSheetDetail(activeTab);
@@ -460,7 +464,7 @@
 
         async function salvarNaNuvem() {
             try {
-                await setDoc(doc(db, "sistemaPimentel", "dadosGerais"), { parsedData, sicoobSaldos });
+                await setDoc(doc(db, "sistemaPimentel", "dadosGerais"), { parsedData, sicoobSaldos, historicoAportes });
             } catch (err) {
                 console.error("Erro ao salvar:", err);
             }
@@ -573,6 +577,105 @@
             reader.readAsArrayBuffer(file);
         }
 
+        // SIMULADOR DE APORTE
+        function popularSelectsAporte() {
+            const origem = document.getElementById('aporteOrigem');
+            const destino = document.getElementById('aporteDestino');
+            origem.innerHTML = ''; destino.innerHTML = '';
+            
+            empresasFixas.forEach(emp => {
+                origem.innerHTML += `<option value="${emp}">${emp}</option>`;
+                destino.innerHTML += `<option value="${emp}">${emp}</option>`;
+            });
+            if (empresasFixas.length > 1) destino.selectedIndex = 1;
+            atualizarNomenclaturaAporte();
+        }
+
+        window.atualizarNomenclaturaAporte = function() {
+            const origem = document.getElementById('aporteOrigem').value;
+            const destino = document.getElementById('aporteDestino').value;
+            if (origem && destino) {
+                document.getElementById('aporteNomenclatura').value = `APORTE ${origem} PARA ${destino}`;
+            }
+        }
+
+        window.executarAporteSimulado = function() {
+            const origem = document.getElementById('aporteOrigem').value;
+            const destino = document.getElementById('aporteDestino').value;
+            const valorInput = document.getElementById('aporteValor').value;
+            const valor = parseNumericValue(valorInput);
+
+            if (!origem || !destino || origem === destino) {
+                alert('Selecione empresas de origem e destino diferentes.');
+                return;
+            }
+            if (!valor || valor <= 0) {
+                alert('Informe um valor válido para o aporte.');
+                return;
+            }
+
+            if ((sicoobSaldos[origem] || 0) < valor) {
+                alert(`A empresa de origem (${origem}) possui saldo insuficiente para este aporte.`);
+                return;
+            }
+
+            sicoobSaldos[origem] -= valor;
+            sicoobSaldos[destino] += valor;
+
+            const novoAporte = {
+                id: Date.now(),
+                hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                origem,
+                destino,
+                nomenclatura: `APORTE ${origem} PARA ${destino}`,
+                valor
+            };
+
+            historicoAportes.unshift(novoAporte);
+            document.getElementById('aporteValor').value = '';
+            salvarNaNuvem();
+            alert('Aporte realizado e refletido nos saldos com sucesso!');
+        }
+
+        window.excluirAporte = function(id) {
+            const aporte = historicoAportes.find(a => a.id === id);
+            if (aporte) {
+                sicoobSaldos[aporte.origem] += aporte.valor;
+                sicoobSaldos[aporte.destino] -= aporte.valor;
+                historicoAportes = historicoAportes.filter(a => a.id !== id);
+                salvarNaNuvem();
+            }
+        }
+
+        function renderHistoricoAportes() {
+            const container = document.getElementById('historicoAportesContainer');
+            const tbody = document.getElementById('historicoAportesBody');
+            tbody.innerHTML = '';
+
+            if (historicoAportes.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            document.getElementById('qtdAportesHoje').innerText = `${historicoAportes.length} aporte(s)`;
+
+            historicoAportes.forEach(a => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-100/50">
+                        <td class="py-2 px-2 font-semibold text-slate-500">${a.hora}</td>
+                        <td class="py-2 px-2 font-bold text-rose-600">${a.origem}</td>
+                        <td class="py-2 px-2 font-bold text-emerald-600">${a.destino}</td>
+                        <td class="py-2 px-2 font-medium text-slate-700">${a.nomenclatura}</td>
+                        <td class="py-2 px-2 text-right font-bold text-slate-900">${a.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td class="py-2 px-2 text-center no-print">
+                            <button onclick="excluirAporte(${a.id})" class="text-rose-500 hover:text-rose-700 font-bold text-xs">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
         window.mudarFiltroRelatorio = function(filtro, btn) {
             filtroRelatorioStatus = filtro;
             document.querySelectorAll('#relatorioFiltrosBtns button').forEach(b => b.classList.remove('active'));
@@ -642,7 +745,7 @@
             document.getElementById('printTotalGeralQtd').innerText = `${grandTotalQtd} títulos`;
         }
 
-        // GERADOR DE IMAGENS EM ALTA RESOLUÇÃO (PNG) PARA WHATSAPP COM LEGENDA CURTA
+        // GERADOR DE IMAGENS EM ALTA RESOLUÇÃO (PNG)
         window.baixarPrintsPorEmpresaHD = async function() {
             const { jsPDF } = window.jspdf;
             const dataHoje = new Date().toISOString().slice(0, 10);
@@ -1072,7 +1175,10 @@
 
         function renderConsolidated() {
             let totalGeral = 0, totalTitulos = 0;
+            let maiorExposicaoVal = 0;
+            let maiorExposicaoNome = '-';
             const summaryData = [];
+
             empresasFixas.forEach(empresa => {
                 const item = parsedData[empresa];
                 let sheetTotal = 0, sheetCount = 0;
@@ -1081,11 +1187,23 @@
                     sheetTotal = aprovados.reduce((s, r) => s + r.valor, 0);
                     sheetCount = aprovados.length;
                 }
-                summaryData.push({ empresa, total: sheetTotal, titulos: sheetCount, saldo: (sicoobSaldos[empresa] || 0) - sheetTotal });
+                
+                if (sheetTotal > maiorExposicaoVal) {
+                    maiorExposicaoVal = sheetTotal;
+                    maiorExposicaoNome = empresa;
+                }
+
+                const saldoSicoob = sicoobSaldos[empresa] || 0;
+                const balancoFinal = saldoSicoob - sheetTotal;
+
+                summaryData.push({ empresa, total: sheetTotal, titulos: sheetCount, saldo: saldoSicoob, balanco: balancoFinal });
                 totalGeral += sheetTotal; totalTitulos += sheetCount;
             });
+
             document.getElementById('kpiTotal').innerText = totalGeral.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             document.getElementById('kpiTitulos').innerText = totalTitulos;
+            document.getElementById('kpiMaiorEmpresa').innerText = maiorExposicaoVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('kpiMaiorEmpresaNome').innerText = maiorExposicaoNome;
 
             const tbody = document.getElementById('summaryTableBody');
             tbody.innerHTML = '';
@@ -1095,8 +1213,9 @@
                     <tr class="border-b border-slate-100 hover:bg-slate-50">
                         <td class="py-3 px-2">Conta ${info.conta} (${info.cnpj})</td>
                         <td class="py-3 px-2 font-bold uppercase text-xs">${item.empresa}</td>
-                        <td class="py-3 px-2 font-bold ${item.saldo < 0 ? 'text-rose-600' : 'text-emerald-600'}">${item.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                        <td class="py-3 px-2 text-right font-bold">${item.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td class="py-3 px-2 font-bold text-slate-700">${item.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td class="py-3 px-2 text-right font-bold text-slate-900">${item.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td class="py-3 px-2 text-right font-bold ${item.balanco < 0 ? 'text-rose-600' : 'text-emerald-600'}">${item.balanco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                     </tr>`;
             });
         }
