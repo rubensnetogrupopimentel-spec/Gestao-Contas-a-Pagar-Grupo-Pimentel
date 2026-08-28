@@ -139,7 +139,7 @@
                                 <svg class="w-5 h-5 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                                 Posicionamento de Saldos Bancários SICOOB
                             </h2>
-                            <p class="text-xs text-slate-500">Acompanhamento e atualização de saldos em tempo real</p>
+                            <p class="text-xs text-slate-500">Clique no botão "Cheque Especial" para visualizar/importar o extrato em PDF de cada empresa</p>
                         </div>
                         <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-200 flex gap-6">
                             <div>
@@ -162,6 +162,42 @@
                                 <h3 class="text-sm font-bold text-slate-900">Simulador de Aporte Entre Empresas</h3>
                                 <p class="text-xs text-slate-500">Realize a transferência de saldo entre as contas SICOOB</p>
                             </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                            <select id="aporteOrigem" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
+                            <span class="text-xs text-[#10b981] font-bold">➔</span>
+                            <select id="aporteDestino" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
+                            <input type="text" id="aporteNomenclatura" placeholder="Nomenclatura Automática" readonly class="text-xs border border-slate-300 rounded-lg px-3 py-2 w-56 bg-slate-100 text-slate-600 outline-none">
+                            <input type="number" id="aporteValor" placeholder="Valor R$" class="text-xs border border-slate-300 rounded-lg px-3 py-2 w-28 bg-white outline-none focus:ring-2 focus:ring-[#10b981]">
+                            <button onclick="executarAporteSimulado()" class="bg-[#10b981] hover:bg-[#0fa071] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm">Realizar Aporte</button>
+                        </div>
+                    </div>
+
+                    <!-- HISTÓRICO DE APORTES -->
+                    <div id="historicoAportesContainer" class="hidden bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Aportes Realizados no Dia
+                            </h4>
+                            <span class="text-[11px] text-slate-500 font-medium" id="qtdAportesHoje">0 aportes</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="text-slate-600 border-b border-slate-200">
+                                        <th class="py-1.5 px-2">Hora</th>
+                                        <th class="py-1.5 px-2">Fluxo Principal</th>
+                                        <th class="py-1.5 px-2">Origem (Doadora)</th>
+                                        <th class="py-1.5 px-2">Destino (Recebedora)</th>
+                                        <th class="py-1.5 px-2">Nomenclatura</th>
+                                        <th class="py-1.5 px-2 text-right">Valor (R$)</th>
+                                        <th class="py-1.5 px-2 text-center no-print">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historicoAportesBody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -334,9 +370,8 @@
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Configuração oficial obtida diretamente no Firebase Console
         const firebaseConfig = {
-            apiKey: "AIzaSyCUwHh7oMRd1niW7gJ3HuPk6CQ0m3s7Hs",
+            apiKey: AIzaSyCUwHh7oMRd1niW7gjQ3huPk6Cq0m3s7Hs,
             authDomain: "gestao-contas-a-pagar.firebaseapp.com",
             projectId: "gestao-contas-a-pagar",
             storageBucket: "gestao-contas-a-pagar.firebasestorage.app",
@@ -607,7 +642,7 @@
             document.getElementById('printTotalGeralQtd').innerText = `${grandTotalQtd} títulos`;
         }
 
-        // GERADOR DE IMAGENS EM ALTA RESOLUÇÃO (PNG) PARA WHATSAPP
+        // GERADOR DE IMAGENS EM ALTA RESOLUÇÃO (PNG) PARA WHATSAPP COM LEGENDA CURTA
         window.baixarPrintsPorEmpresaHD = async function() {
             const { jsPDF } = window.jspdf;
             const dataHoje = new Date().toISOString().slice(0, 10);
