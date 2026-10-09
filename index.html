@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Contas a Pagar - GRUPO R.G.P</title>
+    <title>Gestão de Contas a Pagar - Grupo Pimentel</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,8 +29,7 @@
             border-color: #0f172a !important;
         }
 
-        /* CORREÇÃO DE NITIDEZ E BORRADO DE FONTES NO MODAL E TELAS */
-        #relatorioAprovadosCapture, #relatorioAprovadosCapture *, #secaoResumoEmpresasCapture, #secaoResumoEmpresasCapture * {
+        #relatorioAprovadosCapture, #relatorioAprovadosCapture * {
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
@@ -38,13 +37,12 @@
             transform: translateZ(0);
         }
 
-        /* ESTILOS PARA IMPRESSÃO / SALVAR EM PDF NATIVO */
         @media print {
             body {
                 background-color: #ffffff !important;
                 color: #000000 !important;
             }
-            header, .no-print, #tabsHeader, #aporteOrigem, #aporteDestino, #aporteValor, button, #modalChequeEspecial, #modalRelatorioAprovados, #batchActionBar {
+            header, .no-print, #tabsHeader, #aporteOrigem, #aporteDestino, #aporteValor, button, #modalChequeEspecial, #modalRelatorioAprovados {
                 display: none !important;
             }
             .max-w-7xl {
@@ -61,13 +59,6 @@
                 max-height: none !important;
                 overflow: visible !important;
             }
-            #sheetDetailView table {
-                page-break-inside: auto;
-            }
-            #sheetDetailView tr {
-                page-break-inside: avoid;
-                page-break-after: auto;
-            }
         }
     </style>
 </head>
@@ -80,7 +71,7 @@
                 <span class="inline-block p-3 bg-emerald-100 text-emerald-700 rounded-xl mb-3">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                 </span>
-                <h2 class="text-xl font-black text-slate-900">GRUPO R.G.P</h2>
+                <h2 class="text-xl font-black text-slate-900">GRUPO PIMENTEL</h2>
                 <p class="text-xs text-slate-500 mt-1">Gestão de Contas a Pagar (Seguro e Simultâneo)</p>
             </div>
 
@@ -105,12 +96,9 @@
 
         <!-- CABEÇALHO -->
         <header class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6 flex flex-col lg:flex-row justify-between items-center gap-4">
-            <div class="flex flex-col items-center sm:items-start text-center">
-                <div class="inline-flex flex-col items-center">
-                    <span class="text-2xl font-bold text-slate-900 leading-none">Gestão de Contas a Pagar</span>
-                    <span class="text-2xl font-bold text-slate-900 leading-none mt-1 text-center w-full">GRUPO R.G.P</span>
-                </div>
-                <p class="text-slate-500 text-sm mt-1.5 text-center sm:text-left">Consolidação de Contas a Pagar e Saldos para Aportes (Sincronizado na Nuvem).</p>
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Gestão de Contas a Pagar GRUPO PIMENTEL</h1>
+                <p class="text-slate-500 text-sm mt-1">Consolidação de Contas a Pagar e Saldos para Aportes (Sincronizado na Nuvem).</p>
             </div>
             
             <!-- BOTÕES DO TOPO -->
@@ -126,16 +114,6 @@
                 <button onclick="fazerLogout()" class="text-[11px] text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 font-semibold px-2.5 py-2 rounded-xl transition border border-rose-200 whitespace-nowrap">
                     Sair (Logout)
                 </button>
-                <button onclick="exportarBackup()" class="text-[11px] text-sky-700 hover:text-sky-900 bg-sky-50 hover:bg-sky-100 font-semibold px-2.5 py-2 rounded-xl transition border border-sky-200 flex items-center gap-1 whitespace-nowrap">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                    Salvar Backup
-                </button>
-                <label for="importBackupFile" class="text-[11px] text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 font-semibold px-2.5 py-2 rounded-xl transition border border-indigo-200 cursor-pointer flex items-center gap-1 whitespace-nowrap">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    Carregar Backup
-                </label>
-                <input type="file" id="importBackupFile" accept=".json" class="hidden" onchange="importarBackup(event)">
-
                 <label for="excelFile" class="flex items-center justify-center gap-1 cursor-pointer bg-[#10b981] hover:bg-[#0fa071] text-white font-medium px-3 py-2 rounded-xl transition shadow-sm text-[11px] whitespace-nowrap">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                     <span>Nova Planilha (.xlsx)</span>
@@ -161,7 +139,7 @@
                                 <svg class="w-5 h-5 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                                 Posicionamento de Saldos Bancários SICOOB
                             </h2>
-                            <p class="text-xs text-slate-500">Clique no botão "Cheque Especial" para visualizar/importar o extrato em PDF de cada empresa[cite: 1]</p>
+                            <p class="text-xs text-slate-500">Insira ou edite os saldos diretamente nos campos abaixo</p>
                         </div>
                         <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-200 flex gap-6">
                             <div>
@@ -187,9 +165,9 @@
                         </div>
 
                         <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                            <select id="aporteOrigem" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
+                            <select id="aporteOrigem" onchange="atualizarNomenclaturaAporte()" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
                             <span class="text-xs text-[#10b981] font-bold">➔</span>
-                            <select id="aporteDestino" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
+                            <select id="aporteDestino" onchange="atualizarNomenclaturaAporte()" class="text-xs border border-slate-300 rounded-lg px-3 py-2 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-[#10b981]"></select>
                             <input type="text" id="aporteNomenclatura" placeholder="Nomenclatura Automática" readonly class="text-xs border border-slate-300 rounded-lg px-3 py-2 w-56 bg-slate-100 text-slate-600 outline-none">
                             <input type="number" id="aporteValor" placeholder="Valor R$" class="text-xs border border-slate-300 rounded-lg px-3 py-2 w-28 bg-white outline-none focus:ring-2 focus:ring-[#10b981]">
                             <button onclick="executarAporteSimulado()" class="bg-[#10b981] hover:bg-[#0fa071] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm">Realizar Aporte</button>
@@ -210,7 +188,6 @@
                                 <thead>
                                     <tr class="text-slate-600 border-b border-slate-200">
                                         <th class="py-1.5 px-2">Hora</th>
-                                        <th class="py-1.5 px-2">Fluxo Principal</th>
                                         <th class="py-1.5 px-2">Origem (Doadora)</th>
                                         <th class="py-1.5 px-2">Destino (Recebedora)</th>
                                         <th class="py-1.5 px-2">Nomenclatura</th>
@@ -255,7 +232,8 @@
                                 <th class="py-3 px-2 text-left">Conta SICOOB</th>
                                 <th class="py-3 px-2">Empresa / Razão Social</th>
                                 <th class="py-3 px-2 text-left">Saldo SICOOB Consolidado</th>
-                                <th class="py-3 px-2 text-right">A Pagar (R$)</th>
+                                <th class="py-3 px-2 text-right">A Pagar (R$) [Aprovados]</th>
+                                <th class="py-3 px-2 text-right">Balanço Final (R$)</th>
                             </tr>
                         </thead>
                         <tbody id="summaryTableBody" class="text-sm"></tbody>
@@ -265,33 +243,11 @@
             </div>
 
             <!-- VISUALIZAÇÃO DE DETALHES DE UMA ABA -->
-            <div id="sheetDetailView" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
-                    <div>
-                        <h2 class="text-xl font-bold text-slate-900" id="currentSheetName">Empresa</h2>
-                        <span class="text-sm text-slate-500" id="sheetRecordCount">0 títulos</span>
-                    </div>
-                    
-                    <!-- BARRA DE AÇÃO EM LOTE -->
-                    <div id="batchActionBar" class="hidden flex-wrap items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
-                        <span class="text-xs font-bold text-slate-700 whitespace-nowrap" id="selectedCountBadge">0 selecionados:</span>
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            <button onclick="aplicarStatusLote('Aprovado')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-xs">
-                                ✓ Aprovar
-                            </button>
-                            <button onclick="aplicarStatusLote('Aguardar')" class="bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-xs">
-                                ⏳ Aguardar
-                            </button>
-                            <button onclick="aplicarStatusLote('Programado')" class="bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-xs">
-                                📋 Programar
-                            </button>
-                            <button onclick="aplicarStatusLote('Negar')" class="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg transition shadow-xs">
-                                ✕ Negar
-                            </button>
-                        </div>
-                    </div>
+            <div id="sheetDetailView" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-slate-900" id="currentSheetName">Empresa</h2>
+                    <span class="text-sm text-slate-500" id="sheetRecordCount">0 títulos</span>
                 </div>
-
                 <div class="overflow-x-auto max-h-[500px]">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 text-xs uppercase font-semibold text-slate-600" id="detailTableHeader"></thead>
@@ -304,119 +260,83 @@
 
     </div>
 
-    <!-- MODAL DO RELATÓRIO FINANCEIRO (EXPANSÃO AMPLIADA) -->
+    <!-- MODAL DO RELATÓRIO FINANCEIRO -->
     <div id="modalRelatorioAprovados" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-6 z-50 overflow-y-auto">
         <div class="bg-slate-100 w-full max-w-7xl rounded-2xl shadow-2xl overflow-hidden my-2 flex flex-col max-h-[96vh] h-[95vh]">
             
-            <!-- BARRA SUPERIOR DE AÇÕES -->
-            <div class="bg-slate-900 text-white p-4 flex flex-col gap-3 no-print">
-                <!-- LINHA SUPERIOR: BOTÕES DE AÇÃO E FECHAR -->
-                <div class="flex flex-wrap items-center justify-end gap-2 w-full">
-                    <button onclick="baixarPrintResumoEmpresasHD()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-md flex items-center gap-1.5" title="Baixa a foto em alta resolução apenas do Resumo por Empresa">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <span>Baixar Resumo em Imagem (HD)</span>
-                    </button>
+            <div class="bg-slate-900 text-white p-4 flex flex-col sm:flex-row justify-between items-center gap-3 no-print">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                    <h3 class="text-sm font-bold uppercase tracking-wider" id="modalRelatorioTituloHeader">Relatório Geral Financeiro</h3>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
                     <button onclick="baixarPrintsPorEmpresaHD()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-md flex items-center gap-1.5" title="Gera imagem para cada empresa que possui títulos">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        <span>Prints por Empresa (PNG)</span>
+                        <span>Prints de Todas as Empresas (PNG)</span>
                     </button>
                     <button onclick="baixarPDFPaginadoExecutivo()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-md flex items-center gap-1.5" title="Gera relatório completo consolidado em PDF A4">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         <span>Relatório Paginado Consolidado (PDF)</span>
                     </button>
-                    <button onclick="fecharModalRelatorioAprovados()" class="text-slate-400 hover:text-white p-1.5 rounded-lg transition ml-1">
+                    <button onclick="fecharModalRelatorioAprovados()" class="text-slate-400 hover:text-white p-1.5 rounded-lg transition ml-2">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
-
-                <!-- LINHA INFERIOR: TÍTULO DO RELATÓRIO ABAIXO DOS BOTÕES -->
-                <div class="flex items-center gap-2 pt-1 border-t border-slate-800">
-                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                    <h3 class="text-sm font-bold uppercase tracking-wider" id="modalRelatorioTituloHeader">Relatório Geral Financeiro</h3>
-                </div>
             </div>
 
-            <!-- BARRA DE SELEÇÃO DE FILTROS DE STATUS -->
             <div class="bg-white border-b border-slate-200 px-6 py-3 flex flex-wrap items-center justify-between gap-3 no-print">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-slate-600 uppercase">Filtrar Relatório por:</span>
-                </div>
+                <span class="text-xs font-bold text-slate-600 uppercase">Filtrar Relatório por:</span>
                 <div class="flex flex-wrap items-center gap-2" id="relatorioFiltrosBtns">
-                    <button onclick="mudarFiltroRelatorio('TODOS', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition active">
-                        Todos os Títulos
-                    </button>
-                    <button onclick="mudarFiltroRelatorio('Programado', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-sky-300 text-sky-700 bg-sky-50 hover:bg-sky-100 transition">
-                        Apenas Programados
-                    </button>
-                    <button onclick="mudarFiltroRelatorio('Aprovado', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-300 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition">
-                        Apenas Aprovados
-                    </button>
-                    <button onclick="mudarFiltroRelatorio('Aguardar', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100 transition">
-                        Aguardar
-                    </button>
-                    <button onclick="mudarFiltroRelatorio('Negar', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-100 transition">
-                        Negados
-                    </button>
+                    <button onclick="mudarFiltroRelatorio('TODOS', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition active">Todos os Títulos</button>
+                    <button onclick="mudarFiltroRelatorio('Programado', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-sky-300 text-sky-700 bg-sky-50 transition">Apenas Programados</button>
+                    <button onclick="mudarFiltroRelatorio('Aprovado', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-emerald-300 text-emerald-700 bg-emerald-50 transition">Apenas Aprovados</button>
+                    <button onclick="mudarFiltroRelatorio('Aguardar', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-amber-300 text-amber-700 bg-amber-50 transition">Aguardar</button>
+                    <button onclick="mudarFiltroRelatorio('Negar', this)" class="filter-btn text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-300 text-rose-700 bg-rose-50 transition">Negados</button>
                 </div>
             </div>
 
-            <!-- ÁREA DO RELATÓRIO NA TELA -->
             <div class="p-4 sm:p-6 overflow-y-auto flex-1 bg-slate-100">
                 <div id="relatorioAprovadosCapture" class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6 text-slate-800 w-full max-w-full">
-                    
-                    <!-- BLOCO DE RESUMO IDENTIFICADO PARA CAPTURA NÍTIDA EM HD -->
-                    <div id="secaoResumoEmpresasCapture" class="bg-white p-4 rounded-xl space-y-5">
-                        <!-- CABEÇALHO DO RELATÓRIO -->
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-emerald-500 pb-4 gap-2">
-                            <div>
-                                <h2 class="text-2xl font-black text-slate-900 tracking-tight">GRUPO R.G.P</h2>
-                                <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mt-0.5" id="printSubtituloDoc">Relatório de Títulos Financeiros</p>
-                            </div>
-                            <div class="sm:text-right">
-                                <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full uppercase border border-emerald-300 inline-block" id="printBadgeStatusDoc">Filtro: Todos</span>
-                                <p class="text-[11px] text-slate-400 mt-1" id="printDataGeracao">-</p>
-                            </div>
-                        </div>
-
-                        <!-- CARDS RESUMO -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-                                <span class="text-[11px] font-extrabold text-emerald-800 uppercase block">Total Geral Filtrado</span>
-                                <span class="text-2xl font-black text-emerald-950 mt-1 block" id="printTotalGeralVal">R$ 0,00</span>
-                            </div>
-                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                                <span class="text-[11px] font-extrabold text-slate-600 uppercase block">Quantidade de Títulos</span>
-                                <span class="text-2xl font-black text-slate-900 mt-1 block" id="printTotalGeralQtd">0 títulos</span>
-                            </div>
-                        </div>
-
-                        <!-- RESUMO INDIVIDUAL POR EMPRESA -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-emerald-500 pb-4 gap-2">
                         <div>
-                            <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                                Resumo por Empresa
-                            </h4>
-                            <div class="border border-slate-200 rounded-xl overflow-x-auto shadow-xs">
-                                <table class="w-full text-left text-xs border-collapse min-w-full">
-                                    <thead class="bg-slate-100 text-slate-800 font-extrabold border-b border-slate-200 uppercase">
-                                        <tr>
-                                            <th class="py-2.5 px-4">Empresa / Razão Social</th>
-                                            <th class="py-2.5 px-4 text-center">Títulos</th>
-                                            <th class="py-2.5 px-4 text-right">Valor Total (R$)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="printResumoEmpresasBody" class="divide-y divide-slate-100 font-semibold"></tbody>
-                                </table>
-                            </div>
+                            <h2 class="text-2xl font-black text-slate-900 tracking-tight">GRUPO PIMENTEL</h2>
+                            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mt-0.5" id="printSubtituloDoc">Relatório de Títulos Financeiros</p>
+                        </div>
+                        <div class="sm:text-right">
+                            <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full uppercase border border-emerald-300 inline-block" id="printBadgeStatusDoc">Filtro: Todos</span>
+                            <p class="text-[11px] text-slate-400 mt-1" id="printDataGeracao">-</p>
                         </div>
                     </div>
 
-                    <!-- LISTA DETALHADA -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                            <span class="text-[11px] font-extrabold text-emerald-800 uppercase block">Total Geral Filtrado</span>
+                            <span class="text-2xl font-black text-emerald-950 mt-1 block" id="printTotalGeralVal">R$ 0,00</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <span class="text-[11px] font-extrabold text-slate-600 uppercase block">Quantidade de Títulos</span>
+                            <span class="text-2xl font-black text-slate-900 mt-1 block" id="printTotalGeralQtd">0 títulos</span>
+                        </div>
+                    </div>
+
                     <div>
-                        <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
-                            Detalhamento dos Lançamentos
-                        </h4>
+                        <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-3">Resumo por Empresa</h4>
+                        <div class="border border-slate-200 rounded-xl overflow-x-auto shadow-xs">
+                            <table class="w-full text-left text-xs border-collapse min-w-full">
+                                <thead class="bg-slate-100 text-slate-800 font-extrabold border-b border-slate-200 uppercase">
+                                    <tr>
+                                        <th class="py-2.5 px-4">Empresa / Razão Social</th>
+                                        <th class="py-2.5 px-4 text-center">Títulos</th>
+                                        <th class="py-2.5 px-4 text-right">Valor Total (R$)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="printResumoEmpresasBody" class="divide-y divide-slate-100 font-semibold"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-3">Detalhamento dos Lançamentos</h4>
                         <div class="border border-slate-200 rounded-xl overflow-x-auto shadow-xs">
                             <table class="w-full text-left text-[12px] border-collapse min-w-full">
                                 <thead class="bg-slate-800 text-white font-extrabold uppercase text-[11px]">
@@ -435,204 +355,16 @@
                         </div>
                     </div>
 
-                    <!-- RODAPÉ DO PRINT -->
                     <div class="border-t border-slate-200 pt-3 flex justify-between items-center text-[10px] text-slate-400 font-semibold">
-                        <span>GRUPO R.G.P - Sistema Integrado de Gestão Financeira</span>
+                        <span>Grupo Pimentel - Sistema Integrado de Gestão Financeira</span>
                         <span>Documento gerado automaticamente para conferência</span>
                     </div>
-
                 </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- MODAL DE CHEQUE ESPECIAL E EXTRATO -->
-    <div id="modalChequeEspecial" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto">
-        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden my-8">
-            <div class="bg-[#0a363d] text-white p-5 flex justify-between items-center">
-                <div>
-                    <h3 class="text-base font-bold flex items-center gap-2" id="modalEmpresaNome">
-                        <svg class="w-5 h-5 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        Cheque Especial - RODRIGO PIMENTEL
-                    </h3>
-                    <p class="text-xs text-slate-300 mt-0.5" id="modalContaInfo">Conta corrente: 417.765-7 | CPF: 701.724.801-59</p>
-                </div>
-                <button onclick="fecharModalChequeEspecial()" class="text-slate-300 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-xl transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-
-            <div class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
-
-                <!-- BOTÃO DE UPLOAD DO PDF DO EXTRATO BANCÁRIO -->
-                <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div class="flex items-center gap-2">
-                        <span class="p-2 bg-emerald-100 text-emerald-800 rounded-lg">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                        </span>
-                        <div>
-                            <h4 class="text-xs font-bold text-emerald-950">Atualizar Extrato SICOOB em PDF</h4>
-                            <p class="text-[11px] text-emerald-700">Selecione o arquivo PDF para carregar automaticamente o contrato e memórias de cálculo</p>
-                        </div>
-                    </div>
-                    <label for="inputPdfChequeEspecial" class="bg-[#10b981] hover:bg-[#0fa071] text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-xs cursor-pointer flex items-center gap-1.5 whitespace-nowrap">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                        <span>Carregar PDF Extrato</span>
-                    </label>
-                    <input type="file" id="inputPdfChequeEspecial" accept=".pdf" class="hidden" onchange="processarPdfChequeEspecial(event)">
-                </div>
-
-                <!-- CARDS DE RESUMO -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="p-1.5 bg-emerald-100 text-emerald-700 rounded-lg">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </span>
-                            <span class="text-xs font-bold text-slate-700">Saldo no Painel</span>
-                        </div>
-                        <span class="text-2xl font-extrabold" id="modalSaldoAtual">R$ 0,00</span>
-                        <p class="text-[11px] text-slate-500 mt-1">Saldo bancário inserido manualmente</p>
-                    </div>
-
-                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="p-1.5 bg-sky-100 text-sky-700 rounded-lg">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                </span>
-                                <div>
-                                    <span class="text-xs font-bold text-slate-700 block">Cheque Especial</span>
-                                    <span class="text-[10px] text-slate-400 font-medium">Mês corrente</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- BARRA DE PROGRESSO DO LIMITE -->
-                        <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-                            <div id="modalBarraUtilizacao" class="bg-rose-500 h-full transition-all duration-300" style="width: 0%;"></div>
-                        </div>
-
-                        <div class="flex justify-between items-center text-xs font-bold pt-1">
-                            <div>
-                                <span class="text-[10px] text-slate-400 block font-normal">Utilizado Atual</span>
-                                <span class="text-rose-600" id="modalValorUtilizado">R$ 0,00</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-[10px] text-slate-400 block font-normal">Limite Contratado</span>
-                                <span class="text-slate-800" id="modalLimiteTotal">R$ 0,00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CONTRATO INFO -->
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div>
-                        <span class="text-slate-400 block text-[10px] font-semibold uppercase">Contrato</span>
-                        <span class="font-bold text-slate-800" id="modalNumContrato">-</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block text-[10px] font-semibold uppercase">Taxa Mensal</span>
-                        <span class="font-bold text-slate-800" id="modalTaxaMensal">-</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block text-[10px] font-semibold uppercase">CET Anual</span>
-                        <span class="font-bold text-slate-800" id="modalCETAnual">-</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 block text-[10px] font-semibold uppercase">Juros Acumulados</span>
-                        <span class="font-bold text-rose-600" id="modalJurosAcumulados">R$ 0,00</span>
-                    </div>
-                </div>
-
-                <!-- TABELA 1 -->
-                <div>
-                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        MEMÓRIA DE CÁLCULO SOBRE UTILIZAÇÃO DO CHEQUE ESPECIAL (MÊS DE REFERÊNCIA)
-                    </h4>
-                    <div class="border border-slate-200 rounded-xl overflow-hidden mb-5">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead class="bg-slate-100 text-slate-600 border-b border-slate-200 font-bold">
-                                <tr>
-                                    <th class="py-2 px-3">Data</th>
-                                    <th class="py-2 px-3 text-right">Limite Contratado</th>
-                                    <th class="py-2 px-3 text-right">Saldo em Conta</th>
-                                    <th class="py-2 px-3 text-right">Valor Utilizado</th>
-                                    <th class="py-2 px-3 text-right">Taxa Contratada</th>
-                                    <th class="py-2 px-3 text-right">Valor Juros (R$)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="modalExtratoUtilizacaoBody" class="divide-y divide-slate-100 text-slate-700 bg-white">
-                                <!-- Preenchido dinamicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- TABELA 2 -->
-                <div>
-                    <h4 class="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                        MEMÓRIA DE CÁLCULO SOBRE O EXCESSO DE UTILIZAÇÃO (MÊS DE REFERÊNCIA)
-                    </h4>
-                    <div class="border border-slate-200 rounded-xl overflow-hidden">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead class="bg-amber-50/70 text-amber-900 border-b border-amber-200 font-bold">
-                                <tr>
-                                    <th class="py-2 px-3">Data</th>
-                                    <th class="py-2 px-3 text-right">Limite Contratado</th>
-                                    <th class="py-2 px-3 text-right">Saldo em Conta</th>
-                                    <th class="py-2 px-3 text-right">Valor Excesso Utilizado</th>
-                                    <th class="py-2 px-3 text-right">Taxa Aplicada</th>
-                                    <th class="py-2 px-3 text-right">Valor Juros (R$)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="modalExtratoExcessoBody" class="divide-y divide-slate-100 text-slate-700 bg-white">
-                                <!-- Preenchido dinamicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end">
-                <button onclick="fecharModalChequeEspecial()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-5 py-2 rounded-xl transition">Fechar</button>
             </div>
         </div>
     </div>
 
-    <!-- TELA DE LOGIN CORPORATIVO COM FIREBASE -->
-    <div id="loginScreen" class="fixed inset-0 bg-slate-950 flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-md p-8 rounded-2xl shadow-2xl space-y-6">
-            <div class="text-center">
-                <span class="inline-block p-3 bg-emerald-100 text-emerald-700 rounded-xl mb-3">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </span>
-                <h2 class="text-xl font-black text-slate-900">GRUPO R.G.P</h2>
-                <p class="text-xs text-slate-500 mt-1">Gestão de Contas a Pagar (Seguro e Simultâneo na Nuvem)</p>
-            </div>
-
-            <form onsubmit="realizarLogin(event)" class="space-y-4">
-                <div>
-                    <label class="text-xs font-bold text-slate-700 block mb-1">E-mail Corporativo</label>
-                    <input type="email" id="loginEmail" required value="rubensneto@pimentelmochi.com.br" class="w-full text-xs border border-slate-300 rounded-xl px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-slate-700 block mb-1">Senha de Acesso</label>
-                    <input type="password" id="loginSenha" required placeholder="••••••••" class="w-full text-xs border border-slate-300 rounded-xl px-3.5 py-2.5 outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50">
-                </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-xl transition shadow-md">
-                    Entrar no Sistema
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- SCRIPT DO SISTEMA COM FIREBASE E GERADORES -->
+    <!-- SCRIPT DO SISTEMA COM FIREBASE E GERADORES DE IMAGEM/PDF -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -656,81 +388,34 @@
 
         let parsedData = {};
         let activeTab = 'consolidated';
-        let empresaModalAtual = null;
         let filtroRelatorioStatus = 'TODOS';
-        let selectedRowIds = new Set();
         let historicoAportes = [];
         
         const empresasFixas = [
-            "RODRIGO PIMENTEL",
-            "RGP PLANEJADOS S/A",
-            "RP IMOVEIS E NEGOCIOS LTDA",
-            "SHP COMERCIAL E MONTAGENS LTDA",
-            "PIMENTEL & MOCHI ( Escritório )",
-            "SHORP S/A",
-            "RP & SHP S/A",
-            "RP AGROPECUARIA LTDA",
-            "TEXAS INVESTIMENTOS E PARTICIPACOES S/A",
-            "MEOP & PHOP S/A",
-            "PIMENTEL & MOCHI ( RIO CLARO )",
-            "4P PARTICIPACOES S/A"
+            "RODRIGO PIMENTEL", "RGP PLANEJADOS S/A", "RP IMOVEIS E NEGOCIOS LTDA", 
+            "SHP COMERCIAL E MONTAGENS LTDA", "PIMENTEL & MOCHI ( Escritório )", "SHORP S/A", 
+            "RP & SHP S/A", "RP AGROPECUARIA LTDA", "TEXAS INVESTIMENTOS E PARTICIPACOES S/A", 
+            "MEOP & PHOP S/A", "PIMENTEL & MOCHI ( RIO CLARO )", "4P PARTICIPACOES S/A"
         ];
 
         const contasBancariasInfo = {
-            "RODRIGO PIMENTEL": { tipo: "PF", conta: "417.765-7", razao: "RODRIGO GONCALVES PIMENTEL", cnpj: "701.724.801-59" },
-            "RGP PLANEJADOS S/A": { tipo: "PJ", conta: "419.908-1", razao: "RGP PLANEJADOS S/A", cnpj: "23.612.891/0001-32" },
-            "RP IMOVEIS E NEGOCIOS LTDA": { tipo: "PJ", conta: "419.957-0", razao: "RP IMOVEIS E NEGOCIOS LTDA", cnpj: "18.208.068/0001-26" },
-            "SHP COMERCIAL E MONTAGENS LTDA": { tipo: "PJ", conta: "421.139-1", razao: "SHP COMERCIAL E MONTAGENS LTDA.", cnpj: "36.716.551/0001-01" },
-            "PIMENTEL & MOCHI ( Escritório )": { tipo: "PJ", conta: "422.362-4", razao: "PIMENTEL & MOCHI ADVOGADOS ASSOCIADOS", cnpj: "18.251.928/0001-04" },
-            "SHORP S/A": { tipo: "PJ", conta: "422.378-0", razao: "SHORP S/A", cnpj: "12.656.664/0001-92" },
-            "RP & SHP S/A": { tipo: "PJ", conta: "423.011-6", razao: "RP & SHP S/A", cnpj: "23.429.612/0001-08" },
-            "RP AGROPECUARIA LTDA": { tipo: "PJ", conta: "423.230-5", razao: "RP AGROPECUARIA LTDA", cnpj: "38.058.661/0001-40" },
-            "TEXAS INVESTIMENTOS E PARTICIPACOES S/A": { tipo: "PJ", conta: "423.793-5", razao: "TEXAS INVESTIMENTOS E PARTICIPACOES S/A", cnpj: "40.150.338/0001-44" },
-            "MEOP & PHOP S/A": { tipo: "PJ", conta: "423.892-3", razao: "MEOP & PHOP S/A", cnpj: "40.188.851/0001-24" },
-            "PIMENTEL & MOCHI ( RIO CLARO )": { tipo: "PJ", conta: "431.205-8", razao: "PIMENTEL & MOCHI ADVOGADOS ASSOCIADOS.", cnpj: "18.251.928/0004-57" },
-            "4P PARTICIPACOES S/A": { tipo: "PJ", conta: "471.766-0", razao: "4P PARTICIPACOES S/A", cnpj: "50.984.473/0001-49" }
-        };
-
-        let chequeEspecialConfig = {
-            "RODRIGO PIMENTEL": { limite: 20000.00, numContrato: "IN 177652", taxaMensal: "8,00%", cetAnual: "173,65%", totalJuros: 516.54 },
-            "RGP PLANEJADOS S/A": { limite: 100000.00, numContrato: "IN 199087", taxaMensal: "7,50%", cetAnual: "158,71%", totalJuros: 2178.99 },
-            "RP IMOVEIS E NEGOCIOS LTDA": { limite: 80000.00, numContrato: "IN 419957", taxaMensal: "7,50%", cetAnual: "158,71%", totalJuros: 1120.50 },
-            "SHP COMERCIAL E MONTAGENS LTDA": { limite: 0.00, numContrato: "---", taxaMensal: "---", cetAnual: "---", totalJuros: 0.00 },
-            "PIMENTEL & MOCHI ( Escritório )": { limite: 50000.00, numContrato: "IN 422362", taxaMensal: "7,50%", cetAnual: "158,71%", totalJuros: 850.30 },
-            "SHORP S/A": { limite: 100000.00, numContrato: "IN 422378", taxaMensal: "7,50%", cetAnual: "158,71%", totalJuros: 540.00 },
-            "RP & SHP S/A": { limite: 0.00, numContrato: "---", taxaMensal: "---", cetAnual: "---", totalJuros: 0.00 },
-            "RP AGROPECUARIA LTDA": { limite: 0.00, numContrato: "---", taxaMensal: "---", cetAnual: "---", totalJuros: 0.00 },
-            "TEXAS INVESTIMENTOS E PARTICIPACOES S/A": { limite: 0.00, numContrato: "---", taxaMensal: "---", cetAnual: "---", totalJuros: 0.00 },
-            "MEOP & PHOP S/A": { limite: 0.00, numContrato: "---", taxaMensal: "---", cetAnual: "---", totalJuros: 0.00 },
-            "PIMENTEL & MOCHI ( RIO CLARO )": { limite: 0.00, numContrato: "---", taxaMensal: "---", cetAnual: "---", totalJuros: 0.00 },
-            "4P PARTICIPACOES S/A": { limite: 0.00, numContrato: "---", taxaMensal: "---", cetAnual: "---", totalJuros: 0.00 }
-        };
-
-        let extratosHistoricosUtilizacao = {
-            "RODRIGO PIMENTEL": [
-                { data: "02/08/2026", limite: 20000.00, saldoConta: -20529.60, utilizado: 20000.00, taxa: "8,00%", juros: 53.33 },
-                { data: "03/08/2026", limite: 20000.00, saldoConta: -20529.60, utilizado: 20000.00, taxa: "8,00%", juros: 53.33 },
-                { data: "04/08/2026", limite: 20000.00, saldoConta: -16953.44, utilizado: 16953.44, taxa: "8,00%", juros: 45.21 },
-                { data: "05/08/2026", limite: 20000.00, saldoConta: -16953.44, utilizado: 16953.44, taxa: "8,00%", juros: 45.21 },
-                { data: "06/08/2026", limite: 20000.00, saldoConta: -17165.71, utilizado: 17165.71, taxa: "8,00%", juros: 137.33 },
-                { data: "09/08/2026", limite: 20000.00, saldoConta: -18263.03, utilizado: 18263.03, taxa: "8,00%", juros: 48.70 },
-                { data: "10/08/2026", limite: 20000.00, saldoConta: -16104.64, utilizado: 16104.64, taxa: "8,00%", juros: 42.95 },
-                { data: "11/08/2026", limite: 20000.00, saldoConta: -16104.64, utilizado: 16104.64, taxa: "8,00%", juros: 42.95 },
-                { data: "12/08/2026", limite: 20000.00, saldoConta: -16104.64, utilizado: 16104.64, taxa: "8,00%", juros: 42.95 }
-            ]
-        };
-
-        let extratosHistoricosExcesso = {
-            "RODRIGO PIMENTEL": [
-                { data: "02/08/2026", limite: 20000.00, saldoConta: -20529.60, utilizado: 529.60, taxa: "13,00%", juros: 2.29 },
-                { data: "03/08/2026", limite: 20000.00, saldoConta: -20529.60, utilizado: 529.60, taxa: "13,00%", juros: 2.29 }
-            ]
+            "RODRIGO PIMENTEL": { tipo: "PF", conta: "417.765-7", cnpj: "701.724.801-59" },
+            "RGP PLANEJADOS S/A": { tipo: "PJ", conta: "419.908-1", cnpj: "23.612.891/0001-32" },
+            "RP IMOVEIS E NEGOCIOS LTDA": { tipo: "PJ", conta: "419.957-0", cnpj: "18.208.068/0001-26" },
+            "SHP COMERCIAL E MONTAGENS LTDA": { tipo: "PJ", conta: "421.139-1", cnpj: "36.716.551/0001-01" },
+            "PIMENTEL & MOCHI ( Escritório )": { tipo: "PJ", conta: "422.362-4", cnpj: "18.251.928/0001-04" },
+            "SHORP S/A": { tipo: "PJ", conta: "422.378-0", cnpj: "12.656.664/0001-92" },
+            "RP & SHP S/A": { tipo: "PJ", conta: "423.011-6", cnpj: "23.429.612/0001-08" },
+            "RP AGROPECUARIA LTDA": { tipo: "PJ", conta: "423.230-5", cnpj: "38.058.661/0001-40" },
+            "TEXAS INVESTIMENTOS E PARTICIPACOES S/A": { tipo: "PJ", conta: "423.793-5", cnpj: "40.150.338/0001-44" },
+            "MEOP & PHOP S/A": { tipo: "PJ", conta: "423.892-3", cnpj: "40.188.851/0001-24" },
+            "PIMENTEL & MOCHI ( RIO CLARO )": { tipo: "PJ", conta: "431.205-8", cnpj: "18.251.928/0004-57" },
+            "4P PARTICIPACOES S/A": { tipo: "PJ", conta: "471.766-0", cnpj: "50.984.473/0001-49" }
         };
 
         let sicoobSaldos = {};
         empresasFixas.forEach(emp => { sicoobSaldos[emp] = 0; });
 
-        // GESTÃO DE AUTENTICAÇÃO COM FIREBASE
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -759,16 +444,13 @@
         };
 
         function iniciarEscutaEmTempoReal() {
-            onSnapshot(collection(db, "sistemaRGP"), (snapshot) => {
+            onSnapshot(collection(db, "sistemaPimentel"), (snapshot) => {
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     if (docSnap.id === "dadosGerais") {
                         parsedData = data.parsedData || {};
                         sicoobSaldos = data.sicoobSaldos || sicoobSaldos;
                         historicoAportes = data.historicoAportes || [];
-                        chequeEspecialConfig = data.chequeEspecialConfig || chequeEspecialConfig;
-                        extratosHistoricosUtilizacao = data.extratosHistoricosUtilizacao || extratosHistoricosUtilizacao;
-                        extratosHistoricosExcesso = data.extratosHistoricosExcesso || extratosHistoricosExcesso;
                     }
                 });
                 renderSicoobCards();
@@ -782,204 +464,26 @@
 
         async function salvarNaNuvem() {
             try {
-                await setDoc(doc(db, "sistemaRGP", "dadosGerais"), { 
-                    parsedData, 
-                    sicoobSaldos, 
-                    historicoAportes, 
-                    chequeEspecialConfig, 
-                    extratosHistoricosUtilizacao, 
-                    extratosHistoricosExcesso 
-                });
+                await setDoc(doc(db, "sistemaPimentel", "dadosGerais"), { parsedData, sicoobSaldos, historicoAportes });
             } catch (err) {
-                console.error("Erro ao salvar na nuvem:", err);
+                console.error("Erro ao salvar:", err);
             }
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('aporteOrigem').addEventListener('change', atualizarNomenclaturaAutomatica);
-            document.getElementById('aporteDestino').addEventListener('change', atualizarNomenclaturaAutomatica);
-        });
 
         function normalizarTexto(texto) {
             if (!texto) return '';
-            return texto
-                .toString()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .replace(/[\/\.\,\-\_\(\)]/g, " ")
-                .replace(/\s+/g, " ")
-                .trim()
-                .toUpperCase();
+            return texto.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\/\.\,\-\_\(\)]/g, " ").replace(/\s+/g, " ").trim().toUpperCase();
         }
 
         const mapaEmpresasNormalizadas = {};
-        empresasFixas.forEach(emp => {
-            let norm = normalizarTexto(emp);
-            mapaEmpresasNormalizadas[norm] = emp;
-            if (norm.length > 30) {
-                mapaEmpresasNormalizadas[norm.substring(0, 30)] = emp;
-            }
-        });
-
-        function identificarEmpresaFixa(nomeTexto) {
-            if (!nomeTexto) return null;
-            let norm = normalizarTexto(nomeTexto);
-
-            if (mapaEmpresasNormalizadas[norm]) return mapaEmpresasNormalizadas[norm];
-
-            for (let key in mapaEmpresasNormalizadas) {
-                if (norm === key || norm.includes(key) || key.includes(norm)) {
-                    return mapaEmpresasNormalizadas[key];
-                }
-            }
-
-            if (norm.includes("RODRIGO PIMENTEL")) return "RODRIGO PIMENTEL";
-            if (norm.includes("RGP") && (norm.includes("PLANEJ") || norm.includes("PLANJE"))) return "RGP PLANEJADOS S/A";
-            if (norm.includes("RP IMOVEIS") || (norm.includes("RP") && norm.includes("IMOVEIS"))) return "RP IMOVEIS E NEGOCIOS LTDA";
-            if (norm.includes("SHP COMERCIAL") || (norm.includes("SHP") && norm.includes("MONTAGENS"))) return "SHP COMERCIAL E MONTAGENS LTDA";
-            if (norm.includes("PIMENTEL") && (norm.includes("MOCHI") || norm.includes("ADVOGADOS"))) {
-                if (norm.includes("RIO CLARO")) return "PIMENTEL & MOCHI ( RIO CLARO )";
-                return "PIMENTEL & MOCHI ( Escritório )";
-            }
-            if (norm.includes("SHORP")) return "SHORP S/A";
-            if (norm.includes("RP") && norm.includes("SHP")) return "RP & SHP S/A";
-            if (norm.includes("AGROPECUARIA")) return "RP AGROPECUARIA LTDA";
-            if (norm.includes("TEXAS")) return "TEXAS INVESTIMENTOS E PARTICIPACOES S/A";
-            if (norm.includes("MEOP")) return "MEOP & PHOP S/A";
-            if (norm.includes("4P")) return "4P PARTICIPACOES S/A";
-
-            return null;
-        }
-
-        async function processarPdfChequeEspecial(e) {
-            const file = e.target.files[0];
-            if (!file || !empresaModalAtual) return;
-
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                let fullText = "";
-
-                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                    const page = await pdf.getPage(pageNum);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(' ');
-                    fullText += pageText + "\n";
-                }
-
-                let cfg = chequeEspecialConfig[empresaModalAtual] || {};
-
-                let numContratoMatch = fullText.match(/N[úu]mero\s+do\s+contrato\s*:\s*([A-Z0-9\s\-]+?)(?=\s+Valor|\s+Data|\n)/i) || fullText.match(/\b(IN\s*\d+|---)\b/i);
-                cfg.numContrato = numContratoMatch ? numContratoMatch[1].trim() : "---";
-
-                let valorContratadoMatch = fullText.match(/Valor\s+contratado\s*:\s*R\$\s*([\d\.\,]+)/i);
-                cfg.limite = valorContratadoMatch ? (parseNumericValue(valorContratadoMatch[1]) || 0) : 0;
-
-                let taxaMensalMatch = fullText.match(/Taxa\s+efetiva\s+mensal\s*:\s*([\d\.\,]+%|---)/i) || fullText.match(/Taxa\s+de\s+juros\s+contratada\s*:\s*([\d\.\,]+%|---)/i);
-                cfg.taxaMensal = taxaMensalMatch ? taxaMensalMatch[1].trim() : "---";
-
-                let cetAnualMatch = fullText.match(/CET\s+anual\s*:\s*([\d\.\,]+%|---)/i);
-                cfg.cetAnual = cetAnualMatch ? cetAnualMatch[1].trim() : "---";
-
-                let totalJurosMatch = fullText.match(/Total\s+juros\s+acumulado\s*:\s*R\$\s*([\d\.\,]+)/i);
-                cfg.totalJuros = totalJurosMatch ? (parseNumericValue(totalJurosMatch[1]) || 0) : 0;
-
-                const secUtilizacaoIdx = fullText.indexOf("MEMÓRIA DE CÁLCULO SOBRE UTILIZAÇÃO DO CHEQUE ESPECIAL");
-                const secExcessoIdx = fullText.indexOf("MEMÓRIA DE CÁLCULO SOBRE O EXCESSO DE UTILIZAÇÃO");
-
-                let txtUtilizacao = secUtilizacaoIdx !== -1 && secExcessoIdx !== -1 ? fullText.substring(secUtilizacaoIdx, secExcessoIdx) : (secUtilizacaoIdx !== -1 ? fullText.substring(secUtilizacaoIdx) : fullText);
-                let txtExcesso = secExcessoIdx !== -1 ? fullText.substring(secExcessoIdx) : "";
-
-                let listaUtilizacao = [];
-                let listaExcesso = [];
-                let somaJurosSicoob = 0;
-
-                const regexUtilizacao = /(\d{2}\/\d{2}\/\d{4})\s+R\$\s*([\d\.\,]+)\s+([-\+]?R\$\s*[\d\.\,]+)\s+([-\+]?R\$\s*[\d\.\,]+)\s+([\d\.\,]+%)\s+R\$\s*([\d\.\,]+)/g;
-                let match;
-
-                while ((match = regexUtilizacao.exec(txtUtilizacao)) !== null) {
-                    let limiteLinha = parseNumericValue(match[2]) || cfg.limite;
-                    if (limiteLinha > 0) cfg.limite = limiteLinha;
-                    let valJuros = parseNumericValue(match[6]) || 0;
-                    somaJurosSicoob += valJuros;
-
-                    listaUtilizacao.push({
-                        data: match[1],
-                        limite: limiteLinha,
-                        saldoConta: parseNumericValue(match[3]) || 0,
-                        utilizado: parseNumericValue(match[4]) || 0,
-                        taxa: match[5],
-                        juros: valJuros
-                    });
-                }
-
-                if (txtExcesso) {
-                    const regexExcesso = /(\d{2}\/\d{2}\/\d{4})\s+R\$\s*([\d\.\,]+)\s+([-\+]?R\$\s*[\d\.\,]+)\s+([-\+]?R\$\s*[\d\.\,]+|---)\s+([\d\.\,]+%)\s+(R\$\s*[\d\.\,]+|---)/g;
-                    let matchEx;
-
-                    while ((matchEx = regexExcesso.exec(txtExcesso)) !== null) {
-                        let valJurosEx = parseNumericValue(matchEx[6]) || 0;
-                        let valUtilizadoEx = parseNumericValue(matchEx[4]) || 0;
-
-                        if (valUtilizadoEx > 0 || valJurosEx > 0) {
-                            somaJurosSicoob += valJurosEx;
-                            listaExcesso.push({
-                                data: matchEx[1],
-                                limite: parseNumericValue(matchEx[2]) || cfg.limite,
-                                saldoConta: parseNumericValue(matchEx[3]) || 0,
-                                utilizado: valUtilizadoEx,
-                                taxa: matchEx[5],
-                                juros: valJurosEx
-                            });
-                        }
-                    }
-                }
-
-                if (somaJurosSicoob > 0) cfg.totalJuros = somaJurosSicoob;
-
-                chequeEspecialConfig[empresaModalAtual] = cfg;
-                extratosHistoricosUtilizacao[empresaModalAtual] = listaUtilizacao;
-                extratosHistoricosExcesso[empresaModalAtual] = listaExcesso;
-
-                salvarNaNuvem();
-                abrirModalChequeEspecial(empresaModalAtual);
-                e.target.value = '';
-                alert(`Extrato SICOOB de ${empresaModalAtual} atualizado com sucesso!`);
-
-            } catch (err) {
-                console.error(err);
-                alert("Erro ao processar o arquivo PDF do extrato SICOOB.");
-            }
-        }
-
-        document.getElementById('excelFile').addEventListener('change', handleFile, false);
+        empresasFixas.forEach(emp => { mapaEmpresasNormalizadas[normalizarTexto(emp)] = emp; });
 
         function formatDate(val) {
             if (!val) return '';
-            if (val instanceof Date) {
-                const day = String(val.getDate()).padStart(2, '0');
-                const month = String(val.getMonth() + 1).padStart(2, '0');
-                const year = val.getFullYear();
-                return `${day}/${month}/${year}`;
-            }
+            if (val instanceof Date) return `${String(val.getDate()).padStart(2, '0')}/${String(val.getMonth() + 1).padStart(2, '0')}/${val.getFullYear()}`;
             if (typeof val === 'number') {
                 const date = new Date((val - (25567 + 2)) * 86400 * 1000);
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                return `${day}/${month}/${year}`;
-            }
-            if (typeof val === 'string') {
-                let str = val.trim();
-                if (str.includes('T')) str = str.split('T')[0];
-                const partsISO = str.split('-');
-                if (partsISO.length === 3 && partsISO[0].length === 4) {
-                    return `${partsISO[2].padStart(2, '0')}/${partsISO[1].padStart(2, '0')}/${partsISO[0]}`;
-                }
-                const partsBR = str.split('/');
-                if (partsBR.length === 3) {
-                    return `${partsBR[0].padStart(2, '0')}/${partsBR[1].padStart(2, '0')}/${partsBR[2]}`;
-                }
+                return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
             }
             return String(val);
         }
@@ -987,317 +491,195 @@
         function parseNumericValue(val) {
             if (val === null || val === undefined || val === '' || val === '---') return null;
             if (typeof val === 'number') return val;
-            let strVal = String(val).trim();
-            if (!strVal || strVal === '---') return null;
-            let isNegative = strVal.includes('-');
-            strVal = strVal.replace(/[R$\s\-\+]/g, '');
-            if (strVal.includes(',')) {
-                strVal = strVal.replace(/\./g, '').replace(',', '.');
-            }
+            let strVal = String(val).trim().replace(/[R$\s\-\+]/g, '');
+            if (strVal.includes(',')) strVal = strVal.replace(/\./g, '').replace(',', '.');
             let num = parseFloat(strVal);
-            if (isNaN(num)) return null;
-            return isNegative ? -num : num;
+            return isNaN(num) ? null : num;
         }
 
+        document.getElementById('excelFile').addEventListener('change', handleFile, false);
         function handleFile(e) {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, { type: 'array', cellDates: true, raw: true });
-
                 parsedData = {};
 
-                let isSingleSheetGrouped = false;
-                let singleSheetName = null;
-
-                if (workbook.SheetNames.length === 1) {
-                    isSingleSheetGrouped = true;
-                    singleSheetName = workbook.SheetNames[0];
-                } else {
-                    for (let sName of workbook.SheetNames) {
-                        let normS = normalizarTexto(sName);
-                        if (normS === 'SICOOB' || normS.includes('CONSOLIDADO') || normS.includes('CONTAS A PAGAR')) {
-                            isSingleSheetGrouped = true;
-                            singleSheetName = sName;
-                            break;
+                workbook.SheetNames.forEach(sheetName => {
+                    const norm = normalizarTexto(sheetName);
+                    let matchedEmpresa = mapaEmpresasNormalizadas[norm];
+                    if (!matchedEmpresa) {
+                        for (let key in mapaEmpresasNormalizadas) {
+                            if (norm.includes(key) || key.includes(norm)) { matchedEmpresa = mapaEmpresasNormalizadas[key]; break; }
                         }
                     }
-                }
+                    if (!matchedEmpresa) return;
 
-                if (isSingleSheetGrouped && singleSheetName) {
-                    const sheet = workbook.Sheets[singleSheetName];
+                    const sheet = workbook.Sheets[sheetName];
                     const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true });
-                    
-                    let currentEmpresaAlvo = null;
-                    let currentHeaders = ["Vencimento", "Parc.", "Fornecedor", "Historico", "Valor pagar", "Status", "Observação"];
-                    let valorColIdx = -1;
-                    let vencColIdx = -1;
-                    let fornecedorColIdx = -1;
-                    let historicoColIdx = -1;
-                    let parcColIdx = -1;
-                    let rowCountGlobal = 0;
+                    if (!rawRows || rawRows.length === 0) return;
 
+                    let headerIdx = -1;
                     for (let i = 0; i < rawRows.length; i++) {
-                        const row = rawRows[i];
-                        if (!row || row.length === 0) continue;
+                        const rowStr = rawRows[i].join(' ').toLowerCase();
+                        if (rowStr.includes('vencimento') || rowStr.includes('fornecedor') || rowStr.includes('valor')) { headerIdx = i; break; }
+                    }
 
-                        const rowCellsTrimmed = row.map(c => (c !== null && c !== undefined) ? String(c).trim() : '');
-                        const fullLineText = rowCellsTrimmed.join(' ').toUpperCase();
-
-                        if (fullLineText.includes('TOTAL A PAGAR') || fullLineText.includes('TOTAL PAGAR') || 
-                            fullLineText.includes('TOTAL DA EMPRESA') || fullLineText.includes('SUBTOTAL') || 
-                            fullLineText.includes('TOTAL GERAL')) {
-                            continue;
-                        }
-
-                        if (fullLineText.includes('VENCIMENTO') && (fullLineText.includes('VALOR') || fullLineText.includes('HISTORICO') || fullLineText.includes('FORNECEDOR'))) {
-                            valorColIdx = -1;
-                            vencColIdx = -1;
-                            fornecedorColIdx = -1;
-                            historicoColIdx = -1;
-                            parcColIdx = -1;
-
-                            row.forEach((cellVal, colIdx) => {
-                                let normH = normalizarTexto(cellVal);
-                                if (normH.includes('VALOR')) valorColIdx = colIdx;
-                                if (normH.includes('VENCIMENTO') || normH.includes('VENC')) vencColIdx = colIdx;
-                                if (normH.includes('FORNECEDOR') || normH.includes('BENEFICIARIO') || normH.includes('NOME') || normH.includes('CLIENTE')) fornecedorColIdx = colIdx;
-                                if (normH.includes('HISTORICO') || normH.includes('DESCRICAO') || normH.includes('DETALHE')) historicoColIdx = colIdx;
-                                if (normH.includes('PARC')) parcColIdx = colIdx;
-                            });
-
-                            if (vencColIdx === -1) vencColIdx = 1;
-                            if (parcColIdx === -1) parcColIdx = 2;
-                            if (fornecedorColIdx === -1) fornecedorColIdx = 3;
-                            if (historicoColIdx === -1) historicoColIdx = 4;
-                            if (valorColIdx === -1) valorColIdx = 5;
-
-                            continue;
-                        }
-
-                        let nonBlankCells = [];
-                        row.forEach((val, idx) => {
-                            if (val !== null && val !== undefined && String(val).trim() !== '') {
-                                nonBlankCells.push({ col: idx, val: String(val).trim() });
-                            }
+                    if (headerIdx !== -1) {
+                        let rawHeaders = rawRows[headerIdx].map(h => String(h || '').trim());
+                        let originalHeaders = rawHeaders.filter(h => !h.toLowerCase().includes('observa') && !h.toLowerCase().includes('status'));
+                        let headers = [...originalHeaders, 'Status', 'Observação'];
+                        let valorColIdx = originalHeaders.findIndex(h => h.toLowerCase().includes('valor'));
+                        let vencColIdx = originalHeaders.findIndex(h => h.toLowerCase().includes('vencimento') || h.toLowerCase().includes('venc'));
+                        
+                        let fornecedorColIdx = originalHeaders.findIndex(h => {
+                            let normH = normalizarTexto(h);
+                            return normH.includes('FORNECEDOR') || normH.includes('BENEFICIARIO') || normH.includes('NOME') || normH.includes('RAZAO');
+                        });
+                        let historicoColIdx = originalHeaders.findIndex(h => {
+                            let normH = normalizarTexto(h);
+                            return normH.includes('HISTORICO') || normH.includes('DESCRICAO');
                         });
 
-                        if (nonBlankCells.length === 1 && (nonBlankCells[0].col === 0 || nonBlankCells[0].col === 1 || nonBlankCells[0].col === 2)) {
-                            let textCandidate = nonBlankCells[0].val;
-                            let detectedEmpresa = identificarEmpresaFixa(textCandidate);
-                            if (detectedEmpresa) {
-                                currentEmpresaAlvo = detectedEmpresa;
-                                if (!parsedData[currentEmpresaAlvo]) {
-                                    parsedData[currentEmpresaAlvo] = {
-                                        headers: currentHeaders,
-                                        rows: [],
-                                        fornecedorIdx: 2,
-                                        historicoIdx: 3,
-                                        statusIdx: 5,
-                                        obsIdx: 6
-                                    };
-                                }
-                                continue;
-                            }
-                        }
-
-                        if (currentEmpresaAlvo) {
-                            let actualValCol = valorColIdx !== -1 ? valorColIdx : (row.length - 1);
-                            let rawVal = row[actualValCol];
+                        const rows = [];
+                        for (let i = headerIdx + 1; i < rawRows.length; i++) {
+                            const row = rawRows[i];
+                            if (!row || row.length === 0) continue;
+                            let rawVal = valorColIdx !== -1 ? row[valorColIdx] : null;
                             let numVal = parseNumericValue(rawVal);
-
-                            if (numVal === null || numVal <= 0) {
-                                for (let c = row.length - 1; c >= 0; c--) {
-                                    let testNum = parseNumericValue(row[c]);
-                                    if (testNum !== null && testNum > 0) {
-                                        numVal = testNum;
-                                        actualValCol = c;
-                                        break;
-                                    }
-                                }
-                            }
+                            let lineText = row.join(' ').toUpperCase();
+                            if (lineText.includes('TOTAL DA EMPRESA') || lineText.includes('SUBTOTAL')) continue;
 
                             if (numVal !== null && numVal > 0) {
-                                let vencVal = (vencColIdx !== -1 && row[vencColIdx] !== undefined) ? row[vencColIdx] : '';
-                                let parcVal = (parcColIdx !== -1 && row[parcColIdx] !== undefined) ? row[parcColIdx] : '';
-                                let fornVal = (fornecedorColIdx !== -1 && row[fornecedorColIdx] !== undefined) ? String(row[fornecedorColIdx]).trim() : '';
-                                let histVal = (historicoColIdx !== -1 && row[historicoColIdx] !== undefined) ? String(row[historicoColIdx]).trim() : '';
-
-                                rowCountGlobal++;
-                                let existingStatus = 'Programado';
-                                let existingObs = '';
-
-                                let rowArray = [
-                                    vencVal,
-                                    parcVal,
-                                    fornVal,
-                                    histVal,
-                                    numVal,
-                                    existingStatus,
-                                    existingObs
-                                ];
-
-                                let rowObj = {
-                                    id: rowCountGlobal,
-                                    headers: currentHeaders,
-                                    data: rowArray,
-                                    valor: numVal,
-                                    vencimentoIdx: 0,
-                                    valorIdx: 4,
-                                    fornecedorIdx: 2,
-                                    historicoIdx: 3,
-                                    fornecedorVal: fornVal,
-                                    historicoVal: histVal,
-                                    statusIdx: 5,
-                                    obsIdx: 6,
-                                    status: existingStatus,
-                                    observacao: existingObs
-                                };
-
-                                if (!parsedData[currentEmpresaAlvo]) {
-                                    parsedData[currentEmpresaAlvo] = {
-                                        headers: currentHeaders,
-                                        rows: [],
-                                        fornecedorIdx: 2,
-                                        historicoIdx: 3,
-                                        statusIdx: 5,
-                                        obsIdx: 6
-                                    };
-                                }
-
-                                parsedData[currentEmpresaAlvo].rows.push(rowObj);
+                                let newRowData = originalHeaders.map((_, colI) => row[colI] !== undefined ? row[colI] : '');
+                                newRowData.push('Programado');
+                                newRowData.push('');
+                                rows.push({
+                                    id: i, headers, data: newRowData, valor: numVal,
+                                    vencimentoIdx: vencColIdx, valorIdx: valorColIdx,
+                                    fornecedorIdx: fornecedorColIdx, historicoIdx: historicoColIdx,
+                                    fornecedorVal: fornecedorColIdx !== -1 ? String(row[fornecedorColIdx] || '').trim() : '',
+                                    historicoVal: historicoColIdx !== -1 ? String(row[historicoColIdx] || '').trim() : '',
+                                    statusIdx: headers.length - 2, obsIdx: headers.length - 1,
+                                    status: 'Programado', observacao: ''
+                                });
                             }
                         }
+                        if (rows.length > 0) parsedData[matchedEmpresa] = { headers, rows };
                     }
-                }
-
-                if (Object.keys(parsedData).length === 0) {
-                    workbook.SheetNames.forEach(sheetName => {
-                        let matchedEmpresa = identificarEmpresaFixa(sheetName);
-                        if (!matchedEmpresa) return;
-
-                        const sheet = workbook.Sheets[sheetName];
-                        const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true });
-                        if (!rawRows || rawRows.length === 0) return;
-
-                        let headerIdx = -1;
-                        for (let i = 0; i < rawRows.length; i++) {
-                            const rowStr = rawRows[i].join(' ').toLowerCase();
-                            if (rowStr.includes('vencimento') || rowStr.includes('fornecedor') || rowStr.includes('historico') || rowStr.includes('valor')) {
-                                headerIdx = i;
-                                break;
-                            }
-                        }
-
-                        if (headerIdx !== -1) {
-                            let rawHeaders = rawRows[headerIdx].map(h => String(h || '').trim());
-                            let originalHeaders = rawHeaders.filter(h => !h.toLowerCase().includes('observa') && !h.toLowerCase().includes('status'));
-                            
-                            let headers = [...originalHeaders];
-                            headers.push('Status');
-                            let statusColIdx = headers.length - 1;
-
-                            headers.push('Observação');
-                            let obsColIdx = headers.length - 1;
-
-                            let valorColIdx = originalHeaders.findIndex(h => h.toLowerCase().includes('valor'));
-                            let vencColIdx = originalHeaders.findIndex(h => h.toLowerCase().includes('vencimento') || h.toLowerCase().includes('venc'));
-                            
-                            let fornecedorColIdx = originalHeaders.findIndex(h => {
-                                let normH = normalizarTexto(h);
-                                return normH.includes('FORNECEDOR') || normH.includes('BENEFICIARIO') || normH.includes('NOME') || normH.includes('RAZAO') || normH.includes('CLIENTE');
-                            });
-                            
-                            let historicoColIdx = originalHeaders.findIndex(h => {
-                                let normH = normalizarTexto(h);
-                                return normH.includes('HISTORICO') || normH.includes('DESCRICAO') || normH.includes('DETALHE');
-                            });
-
-                            if (fornecedorColIdx === -1 && originalHeaders.length > 1) fornecedorColIdx = 1;
-                            if (historicoColIdx === -1 && originalHeaders.length > 2) historicoColIdx = 2;
-
-                            const rows = [];
-
-                            for (let i = headerIdx + 1; i < rawRows.length; i++) {
-                                const row = rawRows[i];
-                                if (!row || row.length === 0) continue;
-
-                                let rawVal = valorColIdx !== -1 ? row[valorColIdx] : null;
-                                let fornecedorText = fornecedorColIdx !== -1 && row[fornecedorColIdx] !== undefined ? String(row[fornecedorColIdx]).trim() : '';
-                                let historicoText = historicoColIdx !== -1 && row[historicoColIdx] !== undefined ? String(row[historicoColIdx]).trim() : '';
-                                let lineText = row.join(' ').toUpperCase();
-
-                                if (fornecedorText === '' && historicoText === '' && rawVal === null) continue;
-                                if (lineText.includes('TOTAL DA EMPRESA') || lineText.includes('SUBTOTAL') || lineText.includes('TOTAL A PAGAR') || lineText.includes('TOTAL PAGAR') || lineText.includes('TOTAL GERAL')) continue;
-
-                                let numVal = parseNumericValue(rawVal);
-                                if (numVal !== null && numVal > 0) {
-                                    let newRowData = originalHeaders.map((_, colI) => row[colI] !== undefined ? row[colI] : '');
-                                    let existingStatus = 'Programado';
-                                    let existingObs = '';
-
-                                    newRowData.push(existingStatus);
-                                    newRowData.push(existingObs);
-
-                                    rows.push({
-                                        id: i,
-                                        headers: headers,
-                                        data: newRowData,
-                                        valor: numVal,
-                                        vencimentoIdx: vencColIdx,
-                                        valorIdx: valorColIdx,
-                                        fornecedorIdx: fornecedorColIdx,
-                                        historicoIdx: historicoColIdx,
-                                        fornecedorVal: fornecedorText,
-                                        historicoVal: historicoText,
-                                        statusIdx: statusColIdx,
-                                        obsIdx: obsColIdx,
-                                        status: existingStatus,
-                                        observacao: existingObs
-                                    });
-                                }
-                            }
-
-                            if (rows.length > 0) {
-                                parsedData[matchedEmpresa] = { 
-                                    headers: headers, 
-                                    rows: rows,
-                                    fornecedorIdx: fornecedorColIdx,
-                                    historicoIdx: historicoColIdx,
-                                    statusIdx: statusColIdx,
-                                    obsIdx: obsColIdx
-                                };
-                            }
-                        }
-                    });
-                }
+                });
 
                 salvarNaNuvem();
-
-                document.getElementById('dashboardContainer').classList.remove('hidden');
-
-                renderSicoobCards();
-                renderTabs();
-                renderConsolidated();
-                renderHistoricoAportes();
-
-                if (activeTab !== 'consolidated') {
-                    renderSheetDetail(activeTab);
-                }
-                
-                e.target.value = '';
-                alert('Planilha carregada e sincronizada na nuvem com sucesso!');
+                alert('Planilha importada e sincronizada com sucesso!');
             };
             reader.readAsArrayBuffer(file);
         }
 
-        window.mudarFiltroRelatorio = function(filtro, btnElement) {
+        // SIMULADOR DE APORTE
+        function popularSelectsAporte() {
+            const origem = document.getElementById('aporteOrigem');
+            const destino = document.getElementById('aporteDestino');
+            origem.innerHTML = ''; destino.innerHTML = '';
+            
+            empresasFixas.forEach(emp => {
+                origem.innerHTML += `<option value="${emp}">${emp}</option>`;
+                destino.innerHTML += `<option value="${emp}">${emp}</option>`;
+            });
+            if (empresasFixas.length > 1) destino.selectedIndex = 1;
+            atualizarNomenclaturaAporte();
+        }
+
+        window.atualizarNomenclaturaAporte = function() {
+            const origem = document.getElementById('aporteOrigem').value;
+            const destino = document.getElementById('aporteDestino').value;
+            if (origem && destino) {
+                document.getElementById('aporteNomenclatura').value = `APORTE ${origem} PARA ${destino}`;
+            }
+        }
+
+        window.executarAporteSimulado = function() {
+            const origem = document.getElementById('aporteOrigem').value;
+            const destino = document.getElementById('aporteDestino').value;
+            const valorInput = document.getElementById('aporteValor').value;
+            const valor = parseNumericValue(valorInput);
+
+            if (!origem || !destino || origem === destino) {
+                alert('Selecione empresas de origem e destino diferentes.');
+                return;
+            }
+            if (!valor || valor <= 0) {
+                alert('Informe um valor válido para o aporte.');
+                return;
+            }
+
+            if ((sicoobSaldos[origem] || 0) < valor) {
+                alert(`A empresa de origem (${origem}) possui saldo insuficiente para este aporte.`);
+                return;
+            }
+
+            sicoobSaldos[origem] -= valor;
+            sicoobSaldos[destino] += valor;
+
+            const novoAporte = {
+                id: Date.now(),
+                hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                origem,
+                destino,
+                nomenclatura: `APORTE ${origem} PARA ${destino}`,
+                valor
+            };
+
+            historicoAportes.unshift(novoAporte);
+            document.getElementById('aporteValor').value = '';
+            salvarNaNuvem();
+            alert('Aporte realizado e refletido nos saldos com sucesso!');
+        }
+
+        window.excluirAporte = function(id) {
+            const aporte = historicoAportes.find(a => a.id === id);
+            if (aporte) {
+                sicoobSaldos[aporte.origem] += aporte.valor;
+                sicoobSaldos[aporte.destino] -= aporte.valor;
+                historicoAportes = historicoAportes.filter(a => a.id !== id);
+                salvarNaNuvem();
+            }
+        }
+
+        function renderHistoricoAportes() {
+            const container = document.getElementById('historicoAportesContainer');
+            const tbody = document.getElementById('historicoAportesBody');
+            tbody.innerHTML = '';
+
+            if (historicoAportes.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            document.getElementById('qtdAportesHoje').innerText = `${historicoAportes.length} aporte(s)`;
+
+            historicoAportes.forEach(a => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-100/50">
+                        <td class="py-2 px-2 font-semibold text-slate-500">${a.hora}</td>
+                        <td class="py-2 px-2 font-bold text-rose-600">${a.origem}</td>
+                        <td class="py-2 px-2 font-bold text-emerald-600">${a.destino}</td>
+                        <td class="py-2 px-2 font-medium text-slate-700">${a.nomenclatura}</td>
+                        <td class="py-2 px-2 text-right font-bold text-slate-900">${a.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td class="py-2 px-2 text-center no-print">
+                            <button onclick="excluirAporte(${a.id})" class="text-rose-500 hover:text-rose-700 font-bold text-xs">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.mudarFiltroRelatorio = function(filtro, btn) {
             filtroRelatorioStatus = filtro;
-            document.querySelectorAll('#relatorioFiltrosBtns .filter-btn').forEach(btn => btn.classList.remove('active'));
-            if (btnElement) btnElement.classList.add('active');
+            document.querySelectorAll('#relatorioFiltrosBtns button').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
             renderConteudoRelatorioModal();
         }
 
@@ -1313,15 +695,10 @@
         function renderConteudoRelatorioModal() {
             const agora = new Date();
             document.getElementById('printDataGeracao').innerText = `Gerado em: ${agora.toLocaleDateString('pt-BR')} às ${agora.toLocaleTimeString('pt-BR')}`;
-
-            let grandTotalVal = 0;
-            let grandTotalQtd = 0;
-
+            let grandTotalVal = 0, grandTotalQtd = 0;
             const tbodyResumo = document.getElementById('printResumoEmpresasBody');
             const tbodyDetalhes = document.getElementById('printDetalhamentoBody');
-
-            tbodyResumo.innerHTML = '';
-            tbodyDetalhes.innerHTML = '';
+            tbodyResumo.innerHTML = ''; tbodyDetalhes.innerHTML = '';
 
             let txtFiltro = "Todos os Lançamentos";
             if (filtroRelatorioStatus === 'Programado') txtFiltro = "Apenas Programados";
@@ -1330,125 +707,45 @@
             if (filtroRelatorioStatus === 'Negar') txtFiltro = "Negados";
 
             document.getElementById('printBadgeStatusDoc').innerText = `Filtro: ${txtFiltro}`;
-            document.getElementById('modalRelatorioTituloHeader').innerText = `Relatório Financeiro (${txtFiltro})`;
 
             empresasFixas.forEach(empresa => {
                 const sheetObj = parsedData[empresa];
-                let empTotalVal = 0;
-                let empTotalQtd = 0;
-
+                let empTotalVal = 0, empTotalQtd = 0;
                 if (sheetObj && sheetObj.rows) {
-                    const listaFiltrada = sheetObj.rows.filter(r => {
-                        if (filtroRelatorioStatus === 'TODOS') return true;
-                        return (r.status || 'Programado') === filtroRelatorioStatus;
-                    });
+                    const lista = sheetObj.rows.filter(r => filtroRelatorioStatus === 'TODOS' || (r.status || 'Programado') === filtroRelatorioStatus);
+                    empTotalQtd = lista.length;
+                    empTotalVal = lista.reduce((s, r) => s + r.valor, 0);
 
-                    empTotalQtd = listaFiltrada.length;
-                    empTotalVal = listaFiltrada.reduce((sum, r) => sum + r.valor, 0);
-
-                    listaFiltrada.forEach(r => {
-                        const trD = document.createElement('tr');
-                        trD.className = 'hover:bg-slate-50';
-
-                        let venc = r.vencimentoIdx !== -1 && r.vencimentoIdx !== undefined && r.data[r.vencimentoIdx] ? formatDate(r.data[r.vencimentoIdx]) : '-';
-                        let forn = r.fornecedorVal || (r.fornecedorIdx !== -1 && r.data[r.fornecedorIdx] ? String(r.data[r.fornecedorIdx]).trim() : '-');
-                        let hist = r.historicoVal || (r.historicoIdx !== -1 && r.data[r.historicoIdx] ? String(r.data[r.historicoIdx]).trim() : '-');
-                        let obs = r.observacao || (r.obsIdx !== -1 && r.data[r.obsIdx] ? String(r.data[r.obsIdx]).trim() : '-');
-                        let statusVal = r.status || 'Programado';
-
-                        if (forn === '' || forn === 'undefined') forn = '-';
-                        if (hist === '' || hist === 'undefined') hist = '-';
-                        if (obs === '' || obs === 'undefined') obs = '-';
-
+                    lista.forEach(r => {
+                        let venc = r.vencimentoIdx !== -1 && r.data[r.vencimentoIdx] ? formatDate(r.data[r.vencimentoIdx]) : '-';
+                        let forn = r.fornecedorVal || '-';
+                        let hist = r.historicoVal || '-';
                         let badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;';
-                        if (statusVal === 'Aprovado') badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;';
-                        if (statusVal === 'Aguardar') badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d;';
-                        if (statusVal === 'Negar') badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #ffe4e6; color: #9f1239; border: 1px solid #fda4af;';
+                        if (r.status === 'Aprovado') badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;';
+                        if (r.status === 'Aguardar') badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d;';
+                        if (r.status === 'Negar') badgeStyle = 'display: inline-flex; align-items: center; justify-content: center; width: 110px; height: 26px; font-size: 11px; font-weight: 700; border-radius: 6px; font-family: Arial, sans-serif; background-color: #ffe4e6; color: #9f1239; border: 1px solid #fda4af;';
 
-                        trD.innerHTML = `
-                            <td class="py-3 px-3 font-bold text-slate-800 uppercase" style="vertical-align: middle;">${empresa}</td>
-                            <td class="py-3 px-3 text-slate-600 whitespace-nowrap" style="vertical-align: middle;">${venc}</td>
-                            <td class="py-3 px-3 font-semibold text-slate-900" style="vertical-align: middle;">${forn}</td>
-                            <td class="py-3 px-3 text-slate-600" style="vertical-align: middle;">${hist}</td>
-                            <td class="py-3 px-3 text-center whitespace-nowrap" style="vertical-align: middle;">
-                                <span style="${badgeStyle}">
-                                    ${statusVal}
-                                </span>
-                            </td>
-                            <td class="py-3 px-3 text-slate-600 italic font-medium" style="vertical-align: middle;">${obs}</td>
-                            <td class="py-3 px-3 text-right font-bold text-emerald-700 whitespace-nowrap" style="vertical-align: middle;">${r.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        tbodyDetalhes.innerHTML += `
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-3 font-bold text-slate-800 uppercase" style="vertical-align: middle;">${empresa}</td>
+                                <td class="py-3 px-3 text-slate-600 whitespace-nowrap" style="vertical-align: middle;">${venc}</td>
+                                <td class="py-3 px-3 font-semibold text-slate-900" style="vertical-align: middle;">${forn}</td>
+                                <td class="py-3 px-3 text-slate-600" style="vertical-align: middle;">${hist}</td>
+                                <td class="py-3 px-3 text-center whitespace-nowrap" style="vertical-align: middle;"><span style="${badgeStyle}">${r.status || 'Programado'}</span></td>
+                                <td class="py-3 px-3 text-slate-600 italic font-medium" style="vertical-align: middle;">${r.observacao || '-'}</td>
+                                <td class="py-3 px-3 text-right font-bold text-emerald-700 whitespace-nowrap" style="vertical-align: middle;">${r.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                            </tr>
                         `;
-                        tbodyDetalhes.appendChild(trD);
                     });
-
-                    if (empTotalQtd > 0) {
-                        const trSubtotal = document.createElement('tr');
-                        trSubtotal.className = 'bg-emerald-50/90 border-t-2 border-b-2 border-emerald-300 font-bold text-xs text-emerald-950';
-                        trSubtotal.innerHTML = `
-                            <td colspan="4" class="py-3 px-3 uppercase tracking-wider text-emerald-900 font-extrabold" style="vertical-align: middle;">
-                                ➔ TOTAL - ${empresa} (${empTotalQtd} ${empTotalQtd === 1 ? 'título' : 'títulos'})
-                            </td>
-                            <td colspan="2" class="py-3 px-3 text-right uppercase text-[11px] text-emerald-700 font-black" style="vertical-align: middle;">Subtotal:</td>
-                            <td class="py-3 px-3 text-right text-xs font-black text-emerald-800 whitespace-nowrap" style="vertical-align: middle;">
-                                ${empTotalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                            </td>
-                        `;
-                        tbodyDetalhes.appendChild(trSubtotal);
-                    }
                 }
-
-                grandTotalVal += empTotalVal;
-                grandTotalQtd += empTotalQtd;
-
-                const trR = document.createElement('tr');
-                trR.className = empTotalQtd > 0 ? 'bg-emerald-50/30' : '';
-                trR.innerHTML = `
-                    <td class="py-2.5 px-4 font-bold text-slate-800 uppercase">${empresa}</td>
-                    <td class="py-2.5 px-4 text-center font-bold ${empTotalQtd > 0 ? 'text-emerald-700' : 'text-slate-400'}">${empTotalQtd}</td>
-                    <td class="py-2.5 px-4 text-right font-black ${empTotalVal > 0 ? 'text-emerald-800' : 'text-slate-400'}">${empTotalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                `;
-                tbodyResumo.appendChild(trR);
+                grandTotalVal += empTotalVal; grandTotalQtd += empTotalQtd;
+                tbodyResumo.innerHTML += `<tr><td class="py-2.5 px-4 font-bold uppercase">${empresa}</td><td class="py-2.5 px-4 text-center">${empTotalQtd}</td><td class="py-2.5 px-4 text-right">${empTotalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td></tr>`;
             });
-
             document.getElementById('printTotalGeralVal').innerText = grandTotalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             document.getElementById('printTotalGeralQtd').innerText = `${grandTotalQtd} títulos`;
-
-            if (grandTotalQtd === 0) {
-                tbodyDetalhes.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400 font-semibold italic">Nenhum lançamento encontrado para o filtro selecionado.</td></tr>`;
-            }
         }
 
-        async function baixarPrintResumoEmpresasHD() {
-            const dataHoje = new Date().toISOString().slice(0, 10);
-            const secaoAlvo = document.getElementById('secaoResumoEmpresasCapture');
-
-            if (!secaoAlvo) {
-                alert('Não foi possível localizar a seção de resumo.');
-                return;
-            }
-
-            try {
-                const canvas = await html2canvas(secaoAlvo, {
-                    scale: 3,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    scrollX: 0,
-                    scrollY: 0
-                });
-
-                canvas.toBlob((blob) => {
-                    const link = document.createElement('a');
-                    link.download = `Resumo_Por_Empresas_${filtroRelatorioStatus}_${dataHoje}.png`;
-                    link.href = URL.createObjectURL(blob);
-                    link.click();
-                }, 'image/png', 1.0);
-            } catch (err) {
-                console.error(err);
-                alert('Erro ao gerar imagem em alta resolução do resumo.');
-            }
-        }
-
+        // GERADOR DE IMAGENS EM ALTA RESOLUÇÃO (PNG)
         window.baixarPrintsPorEmpresaHD = async function() {
             const { jsPDF } = window.jspdf;
             const dataHoje = new Date().toISOString().slice(0, 10);
@@ -1456,10 +753,7 @@
             const empresasComTitulos = empresasFixas.filter(empresa => {
                 const sheetObj = parsedData[empresa];
                 if (!sheetObj || !sheetObj.rows) return false;
-                const lista = sheetObj.rows.filter(r => {
-                    if (filtroRelatorioStatus === 'TODOS') return true;
-                    return (r.status || 'Programado') === filtroRelatorioStatus;
-                });
+                const lista = sheetObj.rows.filter(r => filtroRelatorioStatus === 'TODOS' || (r.status || 'Programado') === filtroRelatorioStatus);
                 return lista.length > 0;
             });
 
@@ -1471,101 +765,81 @@
             for (let i = 0; i < empresasComTitulos.length; i++) {
                 const empresa = empresasComTitulos[i];
                 const sheetObj = parsedData[empresa];
-                const listaFiltrada = sheetObj.rows.filter(r => {
-                    if (filtroRelatorioStatus === 'TODOS') return true;
-                    return (r.status || 'Programado') === filtroRelatorioStatus;
-                });
+                const listaFiltrada = sheetObj.rows.filter(r => filtroRelatorioStatus === 'TODOS' || (r.status || 'Programado') === filtroRelatorioStatus);
 
                 const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
                 const empTotalVal = listaFiltrada.reduce((sum, r) => sum + r.valor, 0);
 
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16);
+                doc.setTextColor(15, 23, 42);
+                doc.text("GRUPO PIMENTEL", 14, 15);
+
+                doc.setFontSize(9);
+                doc.setTextColor(100, 116, 139);
+                doc.text(`GESTÃO FINANCEIRA - ${empresa.toUpperCase()}`, 14, 21);
+
+                doc.setFillColor(209, 250, 229);
+                doc.setDrawColor(167, 243, 208);
+                doc.roundedRect(245, 10, 38, 7, 3, 3, 'FD');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8);
+                doc.setTextColor(6, 95, 70);
+                doc.text("Aprovação Direção", 264, 14.5, { align: 'center' });
+
+                doc.setDrawColor(16, 185, 129);
+                doc.setLineWidth(0.5);
+                doc.line(14, 25, 283, 25);
+
+                doc.setFillColor(236, 253, 245);
+                doc.setDrawColor(167, 243, 208);
+                doc.roundedRect(14, 29, 269, 12, 2, 2, 'FD');
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.setTextColor(6, 95, 70);
+                doc.text("EMPRESA:", 18, 36);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(15, 23, 42);
+                doc.text(empresa, 38, 36);
+
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(6, 95, 70);
+                doc.text(`TOTAL GERAL (${listaFiltrada.length} TÍTULOS):`, 200, 36);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(6, 95, 70);
+                doc.text(empTotalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), 278, 36, { align: 'right' });
+
+                let startY = 46;
                 let headers = ["VENCIMENTO", "FORNECEDOR / BENEFICIÁRIO", "HISTÓRICO / DESCRIÇÃO", "STATUS", "OBSERVAÇÕES", "VALOR (R$)"];
                 let colWidths = [28, 65, 100, 26, 25, 25];
                 let startX = 14;
 
-                function desenharCabecalhoPagina(docInst, numPagina) {
-                    docInst.setFont("helvetica", "bold");
-                    docInst.setFontSize(16);
-                    docInst.setTextColor(15, 23, 42);
-                    docInst.text("GRUPO R.G.P", 14, 15);
+                doc.setFillColor(15, 23, 42);
+                doc.rect(startX, startY, 269, 7, 'F');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8);
+                doc.setTextColor(255, 255, 255);
 
-                    docInst.setFontSize(9);
-                    docInst.setTextColor(100, 116, 139);
-                    docInst.text(`GESTÃO FINANCEIRA - ${empresa.toUpperCase()}`, 14, 21);
+                let currentX = startX;
+                headers.forEach((h, idx) => {
+                    let align = (idx === 5) ? 'right' : ((idx === 3) ? 'center' : 'left');
+                    let textX = currentX + 2;
+                    if (align === 'right') textX = currentX + colWidths[idx] - 2;
+                    if (align === 'center') textX = currentX + (colWidths[idx] / 2);
+                    doc.text(h, textX, startY + 4.5, { align: align });
+                    currentX += colWidths[idx];
+                });
 
-                    docInst.setFillColor(209, 250, 229);
-                    docInst.setDrawColor(167, 243, 208);
-                    docInst.roundedRect(245, 10, 38, 7, 3, 3, 'FD');
-                    docInst.setFont("helvetica", "bold");
-                    docInst.setFontSize(8);
-                    docInst.setTextColor(6, 95, 70);
-                    docInst.text("Aprovação Direção", 264, 14.5, { align: 'center' });
-
-                    docInst.setDrawColor(16, 185, 129);
-                    docInst.setLineWidth(0.5);
-                    docInst.line(14, 25, 283, 25);
-
-                    docInst.setFillColor(236, 253, 245);
-                    docInst.setDrawColor(167, 243, 208);
-                    docInst.roundedRect(14, 29, 269, 12, 2, 2, 'FD');
-                    
-                    docInst.setFont("helvetica", "bold");
-                    docInst.setFontSize(9);
-                    docInst.setTextColor(6, 95, 70);
-                    docInst.text("EMPRESA:", 18, 36);
-                    docInst.setFont("helvetica", "normal");
-                    docInst.setTextColor(15, 23, 42);
-                    docInst.text(empresa, 38, 36);
-
-                    docInst.setFont("helvetica", "bold");
-                    docInst.setTextColor(6, 95, 70);
-                    docInst.text(`TOTAL GERAL (${listaFiltrada.length} TÍTULOS):`, 200, 36);
-                    docInst.setFont("helvetica", "bold");
-                    docInst.setTextColor(6, 95, 70);
-                    docInst.text(empTotalVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), 278, 36, { align: 'right' });
-
-                    let startY = 46;
-                    docInst.setFillColor(15, 23, 42);
-                    docInst.rect(startX, startY, 269, 7, 'F');
-                    docInst.setFont("helvetica", "bold");
-                    docInst.setFontSize(8);
-                    docInst.setTextColor(255, 255, 255);
-
-                    let currentX = startX;
-                    headers.forEach((h, idx) => {
-                        let align = (idx === 5) ? 'right' : ((idx === 3) ? 'center' : 'left');
-                        let textX = currentX + 2;
-                        if (align === 'right') textX = currentX + colWidths[idx] - 2;
-                        if (align === 'center') textX = currentX + (colWidths[idx] / 2);
-                        docInst.text(h, textX, startY + 4.5, { align: align });
-                        currentX += colWidths[idx];
-                    });
-
-                    return startY + 7;
-                }
-
-                function desenharRodapePagina(docInst, numPag) {
-                    docInst.setDrawColor(203, 213, 225);
-                    docInst.setLineWidth(0.2);
-                    docInst.line(14, 198, 283, 198);
-                    docInst.setFont("helvetica", "normal");
-                    docInst.setFontSize(8);
-                    docInst.setTextColor(100, 116, 139);
-                    docInst.text("GRUPO R.G.P - Relatório de Gestão Financeira", 14, 203);
-                    docInst.text(`Página ${numPag}`, 283, 203, { align: 'right' });
-                }
-
-                let paginaAtual = 1;
-                let startY = desenharCabecalhoPagina(doc, paginaAtual);
-
+                startY += 7;
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(8);
 
                 listaFiltrada.forEach((r, rowIndex) => {
-                    let venc = r.vencimentoIdx !== -1 && r.vencimentoIdx !== undefined && r.data[r.vencimentoIdx] ? formatDate(r.data[r.vencimentoIdx]) : '-';
-                    let forn = r.fornecedorVal || (r.fornecedorIdx !== -1 && r.data[r.fornecedorIdx] ? String(r.data[r.fornecedorIdx]).trim() : '-');
-                    let hist = r.historicoVal || (r.historicoIdx !== -1 && r.data[r.historicoIdx] ? String(r.data[r.historicoIdx]).trim() : '-');
-                    let obs = r.observacao || (r.obsIdx !== -1 && r.data[r.obsIdx] ? String(r.data[r.obsIdx]).trim() : '-');
+                    let venc = r.vencimentoIdx !== -1 && r.data[r.vencimentoIdx] ? formatDate(r.data[r.vencimentoIdx]) : '-';
+                    let forn = r.fornecedorVal || '-';
+                    let hist = r.historicoVal || '-';
+                    let obs = r.observacao || '-';
                     let statusVal = r.status || 'Programado';
 
                     let histLines = doc.splitTextToSize(hist, colWidths[2] - 4);
@@ -1574,15 +848,6 @@
                     
                     let maxLines = Math.max(histLines.length, fornLines.length, obsLines.length, 1);
                     let rowHeight = Math.max(7, maxLines * 4 + 3);
-
-                    if (startY + rowHeight > 192) {
-                        desenharRodapePagina(doc, paginaAtual);
-                        doc.addPage();
-                        paginaAtual++;
-                        startY = desenharCabecalhoPagina(doc, paginaAtual);
-                        doc.setFont("helvetica", "normal");
-                        doc.setFontSize(8);
-                    }
 
                     if (rowIndex % 2 === 0) {
                         doc.setFillColor(248, 250, 252);
@@ -1631,43 +896,46 @@
                     startY += rowHeight;
                 });
 
-                desenharRodapePagina(doc, paginaAtual);
+                doc.setDrawColor(203, 213, 225);
+                doc.setLineWidth(0.2);
+                doc.line(14, 198, 283, 198);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(100, 116, 139);
+                doc.text("Grupo Pimentel - Relatório de Gestão Financeira", 14, 203);
 
                 const pdfBlob = doc.output('blob');
                 const pdfUrl = URL.createObjectURL(pdfBlob);
                 
                 const loadingPdf = await pdfjsLib.getDocument(pdfUrl).promise;
+                const page = await loadingPdf.getPage(1);
+                const viewport = page.getViewport({ scale: 4.5 });
+                
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+
                 let nomeEmpresaLimpo = empresa.replace(/[^a-zA-Z0-9]/g, '_');
+                let fileName = `Relatorio_${filtroRelatorioStatus}_${nomeEmpresaLimpo}_${dataHoje}.png`;
 
-                for (let pNum = 1; pNum <= loadingPdf.numPages; pNum++) {
-                    const page = await loadingPdf.getPage(pNum);
-                    const viewport = page.getViewport({ scale: 4.0 });
-                    
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-                    
-                    await page.render({ canvasContext: context, viewport: viewport }).promise;
-
-                    let sufixoPag = loadingPdf.numPages > 1 ? `_Pagina_${pNum}` : '';
-                    let fileName = `Relatorio_${filtroRelatorioStatus}_${nomeEmpresaLimpo}_${dataHoje}${sufixoPag}.png`;
-
-                    await new Promise((resolve) => {
-                        canvas.toBlob((blob) => {
-                            const link = document.createElement('a');
-                            link.download = fileName;
-                            link.href = URL.createObjectURL(blob);
-                            link.click();
-                            setTimeout(resolve, 800);
-                        }, 'image/png', 1.0);
-                    });
-                }
+                await new Promise((resolve) => {
+                    canvas.toBlob((blob) => {
+                        const link = document.createElement('a');
+                        link.download = fileName;
+                        link.href = URL.createObjectURL(blob);
+                        link.click();
+                        setTimeout(resolve, 800);
+                    }, 'image/png', 1.0);
+                });
             }
 
-            alert(`Processo concluído! Todas as páginas de todas as empresas foram baixadas sem cortes.`);
+            alert(`Processo concluído! As imagens de todas as ${empresasComTitulos.length} empresas foram baixadas com nitidez máxima.`);
         };
 
+        // GERADOR DE RELATÓRIO PDF EXECUTIVO PAGINADO
         window.baixarPDFPaginadoExecutivo = async function() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
@@ -1680,17 +948,11 @@
                 const sheetObj = parsedData[empresa];
                 if (!sheetObj || !sheetObj.rows) continue;
 
-                const listaFiltrada = sheetObj.rows.filter(r => {
-                    if (filtroRelatorioStatus === 'TODOS') return true;
-                    return (r.status || 'Programado') === filtroRelatorioStatus;
-                });
-
+                const listaFiltrada = sheetObj.rows.filter(r => filtroRelatorioStatus === 'TODOS' || (r.status || 'Programado') === filtroRelatorioStatus);
                 if (listaFiltrada.length === 0) continue;
 
                 temDados = true;
-                if (!firstPage) {
-                    doc.addPage();
-                }
+                if (!firstPage) doc.addPage();
                 firstPage = false;
 
                 const empTotalVal = listaFiltrada.reduce((sum, r) => sum + r.valor, 0);
@@ -1698,7 +960,7 @@
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(16);
                 doc.setTextColor(15, 23, 42);
-                doc.text("GRUPO R.G.P", 14, 15);
+                doc.text("GRUPO PIMENTEL", 14, 15);
 
                 doc.setFontSize(9);
                 doc.setTextColor(100, 116, 139);
@@ -1761,10 +1023,10 @@
                 doc.setFontSize(8);
 
                 listaFiltrada.forEach((r, rowIndex) => {
-                    let venc = r.vencimentoIdx !== -1 && r.vencimentoIdx !== undefined && r.data[r.vencimentoIdx] ? formatDate(r.data[r.vencimentoIdx]) : '-';
-                    let forn = r.fornecedorVal || (r.fornecedorIdx !== -1 && r.data[r.fornecedorIdx] ? String(r.data[r.fornecedorIdx]).trim() : '-');
-                    let hist = r.historicoVal || (r.historicoIdx !== -1 && r.data[r.historicoIdx] ? String(r.data[r.historicoIdx]).trim() : '-');
-                    let obs = r.observacao || (r.obsIdx !== -1 && r.data[r.obsIdx] ? String(r.data[r.obsIdx]).trim() : '-');
+                    let venc = r.vencimentoIdx !== -1 && r.data[r.vencimentoIdx] ? formatDate(r.data[r.vencimentoIdx]) : '-';
+                    let forn = r.fornecedorVal || '-';
+                    let hist = r.historicoVal || '-';
+                    let obs = r.observacao || '-';
                     let statusVal = r.status || 'Programado';
 
                     let histLines = doc.splitTextToSize(hist, colWidths[2] - 4);
@@ -1781,8 +1043,7 @@
                         doc.setFont("helvetica", "normal");
                         doc.setFontSize(8);
                         doc.setTextColor(100, 116, 139);
-                        doc.text("GRUPO R.G.P - Relatório de Gestão Financeira", 14, 203);
-
+                        doc.text("Grupo Pimentel - Relatório de Gestão Financeira", 14, 203);
                         doc.addPage();
                         startY = 15;
                     }
@@ -1840,413 +1101,68 @@
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(8);
                 doc.setTextColor(100, 116, 139);
-                doc.text("GRUPO R.G.P - Relatório de Gestão Financeira", 14, 203);
+                doc.text("Grupo Pimentel - Relatório de Gestão Financeira", 14, 203);
             }
 
             if (temDados) {
-                doc.save(`Relatorio_${filtroRelatorioStatus}_RGP_${dataHoje}.pdf`);
+                doc.save(`Relatorio_${filtroRelatorioStatus}_Pimentel_${dataHoje}.pdf`);
             } else {
                 alert('Nenhum título encontrado para o filtro selecionado.');
             }
         };
 
-        function exportarBackup() {
-            const backupObj = {
-                parsedData: parsedData,
-                sicoobSaldos: sicoobSaldos,
-                aportesDoDia: aportesDoDia,
-                chequeEspecialConfig: chequeEspecialConfig,
-                extratosHistoricosUtilizacao: extratosHistoricosUtilizacao,
-                extratosHistoricosExcesso: extratosHistoricosExcesso
-            };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "backup_rgp_" + new Date().toISOString().slice(0,10) + ".json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        function importarBackup(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const backupObj = JSON.parse(e.target.result);
-                    if (backupObj.sicoobSaldos) {
-                        const saldosCarregados = backupObj.sicoobSaldos;
-                        empresasFixas.forEach(emp => {
-                            sicoobSaldos[emp] = saldosCarregados[emp] !== undefined ? saldosCarregados[emp] : 0;
-                        });
-
-                        parsedData = backupObj.parsedData || {};
-                        aportesDoDia = backupObj.aportesDoDia || [];
-                        chequeEspecialConfig = backupObj.chequeEspecialConfig || chequeEspecialConfig;
-                        extratosHistoricosUtilizacao = backupObj.extratosHistoricosUtilizacao || extratosHistoricosUtilizacao;
-                        extratosHistoricosExcesso = backupObj.extratosHistoricosExcesso || extratosHistoricosExcesso;
-
-                        salvarNaNuvem();
-
-                        document.getElementById('dashboardContainer').classList.remove('hidden');
-
-                        renderSicoobCards();
-                        renderTabs();
-                        renderConsolidated();
-                        renderHistoricoAportes();
-                        alert('Backup carregado e sincronizado na nuvem com sucesso!');
-                    } else {
-                        alert('Arquivo de backup inválido.');
-                    }
-                } catch (err) {
-                    alert('Erro ao ler o arquivo de backup.');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function limparDadosSalvos() {
-            if (confirm('Deseja limpar todos os dados salvos e reiniciar o painel?')) {
-                parsedData = {};
-                empresasFixas.forEach(emp => { sicoobSaldos[emp] = 0; });
-                aportesDoDia = [];
-                salvarNaNuvem();
-                location.reload();
+        window.updateRowStatus = function(sheetName, rowIndex, newStatus) {
+            if (parsedData[sheetName] && parsedData[sheetName].rows) {
+                const rowObj = parsedData[sheetName].rows.find(r => r.id === rowIndex);
+                if (rowObj) { rowObj.status = newStatus; rowObj.data[rowObj.statusIdx] = newStatus; }
             }
-        }
+            salvarNaNuvem();
+        };
+
+        window.updateRowObs = function(sheetName, rowIndex, newObs) {
+            if (parsedData[sheetName] && parsedData[sheetName].rows) {
+                const rowObj = parsedData[sheetName].rows.find(r => r.id === rowIndex);
+                if (rowObj) { rowObj.observacao = newObs; rowObj.data[rowObj.obsIdx] = newObs; }
+            }
+            salvarNaNuvem();
+        };
 
         function renderSicoobCards() {
             const grid = document.getElementById('sicoobCardsGrid');
-            const origenSelect = document.getElementById('aporteOrigem');
-            const destinoSelect = document.getElementById('aporteDestino');
-
-            const valOrigemAntiga = origenSelect.value;
-            const valDestinoAntigo = destinoSelect.value;
-
             grid.innerHTML = '';
-            origenSelect.innerHTML = '<option value="">Origem (Doador)</option>';
-            destinoSelect.innerHTML = '<option value="">Destino (Recebedor)</option>';
-
-            let totalSaldoBruto = 0;
-
-            empresasFixas.forEach(empresa => {
-                let val = sicoobSaldos[empresa] !== undefined ? sicoobSaldos[empresa] : 0;
-                totalSaldoBruto += val;
-
-                origenSelect.innerHTML += `<option value="${empresa}">${empresa}</option>`;
-                destinoSelect.innerHTML += `<option value="${empresa}">${empresa}</option>`;
-
-                const isNegative = val < 0;
-                const card = document.createElement('div');
-                card.className = `p-3 rounded-xl border border-slate-200 bg-[#f8fafc] flex flex-col justify-between gap-2 shadow-xs transition hover:border-emerald-300`;
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-start gap-1">
-                        <span class="text-[11px] font-bold text-[#1e293b] uppercase truncate pr-1" title="${empresa}">${empresa}</span>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap ${isNegative ? 'bg-rose-200 text-rose-800' : 'bg-[#a7f3d0] text-[#065f46]'}">
-                            ${isNegative ? 'Devedor' : 'Credor'}
-                        </span>
-                    </div>
-                    <div>
-                        <label class="text-[10px] text-[#64748b] font-semibold block mb-0.5">Saldo SICOOB:</label>
+            let totalSaldo = 0;
+            empresasFixas.forEach(emp => {
+                let val = sicoobSaldos[emp] || 0;
+                totalSaldo += val;
+                grid.innerHTML += `
+                    <div class="p-3 rounded-xl border border-slate-200 bg-[#f8fafc] flex flex-col justify-between gap-2">
+                        <span class="text-[11px] font-bold text-[#1e293b] uppercase truncate">${emp}</span>
                         <input type="text" value="${val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}" 
                             onfocus="this.value='${val}'; this.select();" 
-                            onblur="updateSaldo('${empresa}', this.value)" 
-                            class="w-full text-xs font-bold bg-white border border-slate-300 rounded-md px-2 py-1 outline-none focus:ring-1 focus:ring-[#10b981] ${isNegative ? 'text-rose-600' : 'text-[#0f172a]'}">
-                    </div>
-                    <button onclick="abrirModalChequeEspecial('${empresa}')" class="w-full text-[10px] font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 py-1 px-2 rounded-lg transition border border-emerald-200 flex items-center justify-center gap-1">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        Cheque Especial / Extrato
-                    </button>
-                `;
-                grid.appendChild(card);
+                            onblur="updateSaldo('${emp}', this.value)" 
+                            class="w-full text-xs font-bold bg-white border border-slate-300 rounded-md px-2 py-1 outline-none">
+                    </div>`;
             });
-
-            if (valOrigemAntiga) origenSelect.value = valOrigemAntiga;
-            if (valDestinoAntigo) destinoSelect.value = valDestinoAntigo;
-            atualizarNomenclaturaAutomatica();
-
-            const totalElem = document.getElementById('totalSaldoSicoob');
-            totalElem.innerText = totalSaldoBruto.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            totalElem.className = `text-lg font-bold ${totalSaldoBruto < 0 ? 'text-rose-600' : 'text-[#10b981]'}`;
-        }
-
-        window.abrirModalChequeEspecial = function(empresa) {
-            empresaModalAtual = empresa;
-            const info = contasBancariasInfo[empresa] || { conta: '-', cnpj: '-', razao: empresa };
-            const cfg = chequeEspecialConfig[empresa] || { limite: 0.00, numContrato: "---", taxaMensal: "---", cetAnual: "---", totalJuros: 0.00 };
-            
-            const saldoAtualPainel = sicoobSaldos[empresa] !== undefined ? sicoobSaldos[empresa] : 0;
-            
-            let valorUtilizadoReal = 0;
-            if (saldoAtualPainel < 0 && cfg.limite > 0) {
-                valorUtilizadoReal = Math.min(Math.abs(saldoAtualPainel), cfg.limite);
-            }
-
-            document.getElementById('modalEmpresaNome').innerHTML = `
-                <svg class="w-5 h-5 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                Cheque Especial - ${empresa}
-            `;
-            document.getElementById('modalContaInfo').innerText = `Conta corrente: ${info.conta} | ${info.tipo === 'PF' ? 'CPF' : 'CNPJ'}: ${info.cnpj}`;
-            
-            const elemSaldoModal = document.getElementById('modalSaldoAtual');
-            elemSaldoModal.innerText = saldoAtualPainel.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            elemSaldoModal.className = `text-2xl font-extrabold ${saldoAtualPainel < 0 ? 'text-rose-600' : 'text-slate-900'}`;
-
-            document.getElementById('modalValorUtilizado').innerText = valorUtilizadoReal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            document.getElementById('modalLimiteTotal').innerText = cfg.limite.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            document.getElementById('modalNumContrato').innerText = cfg.numContrato || "---";
-            document.getElementById('modalTaxaMensal').innerText = cfg.taxaMensal || "---";
-            document.getElementById('modalCETAnual').innerText = cfg.cetAnual || "---";
-            document.getElementById('modalJurosAcumulados').innerText = cfg.totalJuros.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-            let pctUtilizado = 0;
-            if (cfg.limite > 0) {
-                pctUtilizado = Math.min(100, (valorUtilizadoReal / cfg.limite) * 100);
-            }
-            document.getElementById('modalBarraUtilizacao').style.width = `${pctUtilizado}%`;
-
-            const tbodyUtil = document.getElementById('modalExtratoUtilizacaoBody');
-            tbodyUtil.innerHTML = '';
-            const listUtil = extratosHistoricosUtilizacao[empresa] || [];
-
-            if (listUtil.length > 0) {
-                listUtil.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-slate-50';
-                    tr.innerHTML = `
-                        <td class="py-2 px-3 font-medium text-slate-700">${row.data}</td>
-                        <td class="py-2 px-3 text-right font-semibold text-slate-600">${row.limite.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                        <td class="py-2 px-3 text-right font-semibold text-rose-600">${row.saldoConta.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                        <td class="py-2 px-3 text-right font-bold text-rose-600">${row.utilizado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                        <td class="py-2 px-3 text-right font-semibold text-slate-600">${row.taxa}</td>
-                        <td class="py-2 px-3 text-right font-bold text-slate-800">${row.juros.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    `;
-                    tbodyUtil.appendChild(tr);
-                });
-            } else {
-                tbodyUtil.innerHTML = `<tr><td colspan="6" class="py-3 text-center text-slate-400 italic">Nenhum registro de utilização no período.</td></tr>`;
-            }
-
-            const tbodyExc = document.getElementById('modalExtratoExcessoBody');
-            tbodyExc.innerHTML = '';
-            const listExc = extratosHistoricosExcesso[empresa] || [];
-
-            if (listExc.length > 0) {
-                listExc.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-amber-50/50';
-                    tr.innerHTML = `
-                        <td class="py-2 px-3 font-medium text-slate-700">${row.data}</td>
-                        <td class="py-2 px-3 text-right font-semibold text-slate-600">${row.limite.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                        <td class="py-2 px-3 text-right font-semibold text-rose-600">${row.saldoConta.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                        <td class="py-2 px-3 text-right font-bold text-amber-700">${row.utilizado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                        <td class="py-2 px-3 text-right font-semibold text-amber-800">${row.taxa}</td>
-                        <td class="py-2 px-3 text-right font-bold text-slate-800">${row.juros.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    `;
-                    tbodyExc.appendChild(tr);
-                });
-            } else {
-                tbodyExc.innerHTML = `<tr><td colspan="6" class="py-3 text-center text-slate-400 italic">Não há registros de excesso de utilização no período.</td></tr>`;
-            }
-
-            document.getElementById('modalChequeEspecial').classList.remove('hidden');
-        }
-
-        window.fecharModalChequeEspecial = function() {
-            document.getElementById('modalChequeEspecial').classList.add('hidden');
-            empresaModalAtual = null;
-        }
-
-        function atualizarNomenclaturaAutomatica() {
-            const origem = document.getElementById('aporteOrigem').value;
-            const destino = document.getElementById('aporteDestino').value;
-            const inputNomenclatura = document.getElementById('aporteNomenclatura');
-
-            if (origem === "PIMENTEL & MOCHI ( RIO CLARO )" && destino === "RP & SHP S/A") {
-                inputNomenclatura.value = "Fluxo Completo (3 Etapas Automáticas)";
-            } else if (origem === "PIMENTEL & MOCHI ( RIO CLARO )" && destino === "RODRIGO PIMENTEL") {
-                inputNomenclatura.value = "Antecipação de Lucros";
-            } else if (origem === "RODRIGO PIMENTEL" && destino === "TEXAS INVESTIMENTOS E PARTICIPACOES S/A") {
-                inputNomenclatura.value = "Aporte de AFAC";
-            } else if (origem === "TEXAS INVESTIMENTOS E PARTICIPACOES S/A" && destino === "RP & SHP S/A") {
-                inputNomenclatura.value = "Fluxo de Caixa Entre Empresas do Mesmo Grupo";
-            } else {
-                inputNomenclatura.value = "";
-            }
+            document.getElementById('totalSaldoSicoob').innerText = totalSaldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
         window.updateSaldo = function(empresa, valStr) {
-            let num = parseNumericValue(valStr);
-            sicoobSaldos[empresa] = num !== null ? num : 0;
+            sicoobSaldos[empresa] = parseNumericValue(valStr) || 0;
             salvarNaNuvem();
-            renderSicoobCards();
-            renderConsolidated();
-        }
-
-        window.executarAporteSimulado = function() {
-            const orig = document.getElementById('aporteOrigem').value;
-            const dest = document.getElementById('aporteDestino').value;
-            const val = parseFloat(document.getElementById('aporteValor').value);
-
-            if (!orig || !dest || isNaN(val) || val <= 0) {
-                alert('Selecione Origem, Destino e um Valor válido para realizar o aporte.');
-                return;
-            }
-
-            if (orig === dest) {
-                alert('Origem e Destino devem ser empresas diferentes.');
-                return;
-            }
-
-            const agora = new Date();
-            const horaFormatted = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            const grupoId = 'grupo_' + Date.now();
-
-            if (orig === "PIMENTEL & MOCHI ( RIO CLARO )" && dest === "RP & SHP S/A") {
-                sicoobSaldos["PIMENTEL & MOCHI ( RIO CLARO )"] -= val;
-                sicoobSaldos["RODRIGO PIMENTEL"] += val;
-
-                sicoobSaldos["RODRIGO PIMENTEL"] -= val;
-                sicoobSaldos["TEXAS INVESTIMENTOS E PARTICIPACOES S/A"] += val;
-
-                sicoobSaldos["TEXAS INVESTIMENTOS E PARTICIPACOES S/A"] -= val;
-                sicoobSaldos["RP & SHP S/A"] += val;
-
-                const passos = [
-                    { origem: "PIMENTEL & MOCHI ( RIO CLARO )", destino: "RP & SHP S/A", nomenclatura: "Início do Fluxo Consolidado" },
-                    { origem: "Pimentel & Mochi ( Rio Claro )", destino: "Rodrigo Pimentel", nomenclatura: "Antecipação de Lucros" },
-                    { origem: "Rodrigo Pimentel", destino: "Texas Investimentos", nomenclatura: "Aporte de AFAC" },
-                    { origem: "Texas Investimentos", destino: "RP & SHP S/A", nomenclatura: "Fluxo de Caixa Entre Empresas do Mesmo Grupo" },
-                    { origem: "RP & SHP S/A", destino: "RP & SHP S/A", nomenclatura: "Fluxo de Caixa Entre Empresas do Mesmo Grupo ( Entrada valor )" }
-                ];
-
-                for (let i = passos.length - 1; i >= 0; i--) {
-                    const p = passos[i];
-                    historicoAportes.unshift({
-                        id: Date.now() + i,
-                        grupoId: grupoId,
-                        isBatch: true,
-                        hora: horaFormatted,
-                        fluxoPrincipal: "PIMENTEL & MOCHI ( Rio Claro ) ➔ RP & SHP S/A",
-                        origem: p.origem,
-                        destino: p.destino,
-                        nomenclatura: p.nomenclatura,
-                        valor: val
-                    });
-                }
-            } else {
-                sicoobSaldos[orig] -= val;
-                sicoobSaldos[dest] += val;
-
-                historicoAportes.unshift({
-                    id: Date.now(),
-                    grupoId: grupoId,
-                    isBatch: false,
-                    hora: horaFormatted,
-                    fluxoPrincipal: "Aporte Direto",
-                    origem: orig,
-                    destino: dest,
-                    nomenclatura: document.getElementById('aporteNomenclatura').value || 'Transferência Direta',
-                    valor: val
-                });
-            }
-
-            document.getElementById('aporteValor').value = '';
-            salvarNaNuvem();
-            renderSicoobCards();
-            renderConsolidated();
-            renderHistoricoAportes();
-        }
-
-        window.apagarAporte = function(id) {
-            const idx = historicoAportes.findIndex(a => a.id === id);
-            if (idx !== -1) {
-                const aporte = historicoAportes[idx];
-                
-                if (aporte.grupoId && aporte.isBatch) {
-                    if (confirm('Deseja desfazer toda a cadeia encadeada deste fluxo automático?')) {
-                        sicoobSaldos["PIMENTEL & MOCHI ( RIO CLARO )"] += aporte.valor;
-                        sicoobSaldos["RP & SHP S/A"] -= aporte.valor;
-
-                        historicoAportes = historicoAportes.filter(a => a.grupoId !== aporte.grupoId);
-                    } else {
-                        return;
-                    }
-                } else {
-                    sicoobSaldos[aporte.origem] += aporte.valor;
-                    sicoobSaldos[aporte.destino] -= aporte.valor;
-                    historicoAportes.splice(idx, 1);
-                }
-
-                salvarNaNuvem();
-                renderSicoobCards();
-                renderConsolidated();
-                renderHistoricoAportes();
-            }
-        }
-
-        function renderHistoricoAportes() {
-            const container = document.getElementById('historicoAportesContainer');
-            const tbody = document.getElementById('historicoAportesBody');
-            const qtdElem = document.getElementById('qtdAportesHoje');
-
-            if (historicoAportes.length === 0) {
-                container.classList.add('hidden');
-                return;
-            }
-
-            container.classList.remove('hidden');
-            qtdElem.innerText = `${historicoAportes.length} registros no histórico`;
-            tbody.innerHTML = '';
-
-            historicoAportes.forEach(a => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-100/50';
-                
-                tr.innerHTML = `
-                    <td class="py-2 px-2 text-slate-500 whitespace-nowrap">${a.hora}</td>
-                    <td class="py-2 px-2 text-slate-700 whitespace-nowrap">${a.fluxoPrincipal || 'Direto'}</td>
-                    <td class="py-2 px-2 font-medium text-slate-800">${a.origem}</td>
-                    <td class="py-2 px-2 font-medium text-slate-800">${a.destino}</td>
-                    <td class="py-2 px-2 text-slate-600 font-semibold">${a.nomenclatura}</td>
-                    <td class="py-2 px-2 text-right font-bold text-[#10b981] whitespace-nowrap">${a.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    <td class="py-2 px-2 text-center no-print whitespace-nowrap">
-                        <button onclick="apagarAporte(${a.id})" class="text-rose-600 hover:text-rose-800 font-bold bg-rose-50 hover:bg-rose-100 px-2 py-0.5 rounded transition">
-                            Apagar
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+        };
 
         function renderTabs() {
             const tabsHeader = document.getElementById('tabsHeader');
-            tabsHeader.innerHTML = '';
-
-            const consTab = document.createElement('button');
-            consTab.className = `tab-btn px-4 py-2 text-sm font-medium text-slate-600 hover:text-[#10b981] rounded-lg whitespace-nowrap ${activeTab === 'consolidated' ? 'active' : ''}`;
-            consTab.innerText = '📊 Dashboard Geral';
-            consTab.onclick = () => switchTab('consolidated', consTab);
-            tabsHeader.appendChild(consTab);
-
+            tabsHeader.innerHTML = `<button class="tab-btn px-4 py-2 text-sm font-medium rounded-lg ${activeTab === 'consolidated' ? 'active' : ''}" onclick="switchTab('consolidated', this)">📊 Dashboard Geral</button>`;
             empresasFixas.forEach(sheetName => {
-                const btn = document.createElement('button');
-                btn.className = `tab-btn px-4 py-2 text-sm font-medium text-slate-600 hover:text-[#10b981] rounded-lg whitespace-nowrap ${activeTab === sheetName ? 'active' : ''}`;
-                btn.innerText = sheetName;
-                btn.onclick = () => switchTab(sheetName, btn);
-                tabsHeader.appendChild(btn);
+                tabsHeader.innerHTML += `<button class="tab-btn px-4 py-2 text-sm font-medium rounded-lg ${activeTab === sheetName ? 'active' : ''}" onclick="switchTab('${sheetName}', this)">${sheetName}</button>`;
             });
         }
 
         window.switchTab = function(sheetName, element) {
             activeTab = sheetName;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             if (element) element.classList.add('active');
-
             if (sheetName === 'consolidated') {
                 document.getElementById('consolidatedView').classList.remove('hidden');
                 document.getElementById('sheetDetailView').classList.add('hidden');
@@ -2255,256 +1171,84 @@
                 document.getElementById('sheetDetailView').classList.remove('hidden');
                 renderSheetDetail(sheetName);
             }
-        }
+        };
 
         function renderConsolidated() {
-            let totalGeral = 0;
-            let totalTitulos = 0;
+            let totalGeral = 0, totalTitulos = 0;
+            let maiorExposicaoVal = 0;
+            let maiorExposicaoNome = '-';
             const summaryData = [];
 
             empresasFixas.forEach(empresa => {
                 const item = parsedData[empresa];
-                let sheetTotal = 0;
-                let sheetCount = 0;
-
+                let sheetTotal = 0, sheetCount = 0;
                 if (item && item.rows) {
-                    let aprovadosRows = item.rows.filter(r => (r.status || 'Programado') === 'Aprovado');
-                    sheetTotal = aprovadosRows.reduce((sum, r) => sum + r.valor, 0);
-                    sheetCount = aprovadosRows.length;
+                    let aprovados = item.rows.filter(r => (r.status || 'Programado') === 'Aprovado');
+                    sheetTotal = aprovados.reduce((s, r) => s + r.valor, 0);
+                    sheetCount = aprovados.length;
+                }
+                
+                if (sheetTotal > maiorExposicaoVal) {
+                    maiorExposicaoVal = sheetTotal;
+                    maiorExposicaoNome = empresa;
                 }
 
-                let saldoBancarioBase = sicoobSaldos[empresa] !== undefined ? sicoobSaldos[empresa] : 0;
-                let saldoDeduzidoNoBalanco = saldoBancarioBase - sheetTotal;
+                const saldoSicoob = sicoobSaldos[empresa] || 0;
+                const balancoFinal = saldoSicoob - sheetTotal;
 
-                summaryData.push({ 
-                    empresa: empresa, 
-                    total: sheetTotal, 
-                    titulos: sheetCount, 
-                    saldo: saldoDeduzidoNoBalanco 
-                });
-
-                totalGeral += sheetTotal;
-                totalTitulos += sheetCount;
-            });
-
-            summaryData.sort((a, b) => {
-                if (a.total > 0 || b.total > 0) {
-                    return b.total - a.total;
-                }
-                return b.saldo - a.saldo;
+                summaryData.push({ empresa, total: sheetTotal, titulos: sheetCount, saldo: saldoSicoob, balanco: balancoFinal });
+                totalGeral += sheetTotal; totalTitulos += sheetCount;
             });
 
             document.getElementById('kpiTotal').innerText = totalGeral.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             document.getElementById('kpiTitulos').innerText = totalTitulos;
-            if (summaryData.length > 0 && summaryData[0].total > 0) {
-                document.getElementById('kpiMaiorEmpresa').innerText = summaryData[0].total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                document.getElementById('kpiMaiorEmpresaNome').innerText = summaryData[0].empresa;
-            } else {
-                document.getElementById('kpiMaiorEmpresa').innerText = 'R$ 0,00';
-                document.getElementById('kpiMaiorEmpresaNome').innerText = '-';
-            }
+            document.getElementById('kpiMaiorEmpresa').innerText = maiorExposicaoVal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('kpiMaiorEmpresaNome').innerText = maiorExposicaoNome;
 
             const tbody = document.getElementById('summaryTableBody');
             tbody.innerHTML = '';
-            
             summaryData.forEach(item => {
-                const info = contasBancariasInfo[item.empresa] || { tipo: 'PJ', conta: '-', razao: item.empresa, cnpj: '-' };
-                const tr = document.createElement('tr');
-                const saldoClass = item.saldo < 0 ? 'text-[#e11d48]' : (item.saldo > 0 ? 'text-[#10b981]' : 'text-slate-400');
-                tr.className = "border-b border-slate-100 last:border-0 hover:bg-slate-50/70 transition";
-                
-                tr.innerHTML = `
-                    <td class="py-3 px-2 whitespace-nowrap">
-                        <div class="flex flex-col items-start gap-1">
-                            <span class="inline-flex items-center gap-1.5 bg-[#0a363d] text-white text-xs px-2.5 py-1 rounded-md font-semibold">
-                                <span class="text-[9px] text-[#10b981] font-extrabold uppercase">${info.tipo}</span>
-                                <span>Conta ${info.conta}</span>
-                            </span>
-                            <span class="text-[11px] text-slate-500 font-medium pl-0.5">
-                                ${info.tipo === 'PF' ? 'CPF' : 'CNPJ'}: ${info.cnpj}
-                            </span>
-                        </div>
-                    </td>
-                    <td class="py-3 px-2">
-                        <div class="font-bold text-[#1e293b] uppercase text-xs">${item.empresa}</div>
-                    </td>
-                    <td class="py-3 px-2 text-left text-[13px] font-bold ${saldoClass} whitespace-nowrap">${item.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    <td class="py-3 px-2 text-right text-[13px] font-bold text-[#1e293b] whitespace-nowrap">${item.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                `;
-                tbody.appendChild(tr);
+                const info = contasBancariasInfo[item.empresa] || { conta: '-', cnpj: '-' };
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50">
+                        <td class="py-3 px-2">Conta ${info.conta} (${info.cnpj})</td>
+                        <td class="py-3 px-2 font-bold uppercase text-xs">${item.empresa}</td>
+                        <td class="py-3 px-2 font-bold text-slate-700">${item.saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td class="py-3 px-2 text-right font-bold text-slate-900">${item.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td class="py-3 px-2 text-right font-bold ${item.balanco < 0 ? 'text-rose-600' : 'text-emerald-600'}">${item.balanco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                    </tr>`;
             });
-        }
-
-        window.toggleSelectAllRows = function(masterCheckbox) {
-            const checkboxes = document.querySelectorAll('.row-batch-checkbox');
-            checkboxes.forEach(cb => {
-                cb.checked = masterCheckbox.checked;
-                let rId = parseInt(cb.getAttribute('data-row-id'));
-                if (masterCheckbox.checked) {
-                    selectedRowIds.add(rId);
-                } else {
-                    selectedRowIds.delete(rId);
-                }
-            });
-            atualizarBarraAcaoLote();
-        }
-
-        window.toggleRowSelection = function(rowId, cbElement) {
-            if (cbElement.checked) {
-                selectedRowIds.add(rowId);
-            } else {
-                selectedRowIds.delete(rowId);
-                const masterCheckbox = document.getElementById('selectAllRowsCb');
-                if (masterCheckbox) masterCheckbox.checked = false;
-            }
-            atualizarBarraAcaoLote();
-        }
-
-        function atualizarBarraAcaoLote() {
-            const bar = document.getElementById('batchActionBar');
-            const badge = document.getElementById('selectedCountBadge');
-            if (selectedRowIds.size > 0) {
-                bar.classList.remove('hidden');
-                bar.classList.add('flex');
-                badge.innerText = `${selectedRowIds.size} ${selectedRowIds.size === 1 ? 'selecionado' : 'selecionados'}:`;
-            } else {
-                bar.classList.add('hidden');
-                bar.classList.remove('flex');
-            }
-        }
-
-        window.aplicarStatusLote = function(novoStatus) {
-            if (!activeTab || activeTab === 'consolidated') return;
-            if (selectedRowIds.size === 0) return;
-
-            const sheetObj = parsedData[activeTab];
-            if (sheetObj && sheetObj.rows) {
-                sheetObj.rows.forEach(r => {
-                    if (selectedRowIds.has(r.id)) {
-                        r.status = novoStatus;
-                        r.data[r.statusIdx] = novoStatus;
-                    }
-                });
-            }
-
-            selectedRowIds.clear();
-            salvarNaNuvem();
-            renderConsolidated();
-            renderSheetDetail(activeTab);
-        }
-
-        window.updateRowStatus = function(sheetName, rowIndex, newStatus) {
-            if (parsedData[sheetName] && parsedData[sheetName].rows) {
-                const rowObj = parsedData[sheetName].rows.find(r => r.id === rowIndex);
-                if (rowObj) {
-                    rowObj.status = newStatus;
-                    rowObj.data[rowObj.statusIdx] = newStatus;
-                }
-            }
-            salvarNaNuvem();
-            renderConsolidated();
-        }
-
-        window.updateRowObs = function(sheetName, rowIndex, newObs) {
-            if (parsedData[sheetName] && parsedData[sheetName].rows) {
-                const rowObj = parsedData[sheetName].rows.find(r => r.id === rowIndex);
-                if (rowObj) {
-                    rowObj.observacao = newObs;
-                    rowObj.data[rowObj.obsIdx] = newObs;
-                }
-            }
-            salvarNaNuvem();
         }
 
         function renderSheetDetail(sheetName) {
             const sheetObj = parsedData[sheetName];
             const thead = document.getElementById('detailTableHeader');
             const tbody = document.getElementById('detailTableBody');
-            thead.innerHTML = '';
-            tbody.innerHTML = '';
-            selectedRowIds.clear();
-            atualizarBarraAcaoLote();
-
-            if (!sheetObj || !sheetObj.rows || sheetObj.rows.length === 0) {
-                document.getElementById('currentSheetName').innerText = `Empresa: ${sheetName}`;
-                document.getElementById('sheetRecordCount').innerText = `0 títulos (Nenhuma aba ou dados importados para esta empresa)`;
-                return;
-            }
+            thead.innerHTML = ''; tbody.innerHTML = '';
+            if (!sheetObj || !sheetObj.rows) return;
 
             document.getElementById('currentSheetName').innerText = `Empresa: ${sheetName}`;
-            document.getElementById('sheetRecordCount').innerText = `${sheetObj.rows.length} títulos totais`;
-
-            const headers = sheetObj.headers;
-            const headerTr = document.createElement('tr');
-
-            const thCheck = document.createElement('th');
-            thCheck.className = 'py-2 px-3 text-center w-10';
-            thCheck.innerHTML = `<input type="checkbox" id="selectAllRowsCb" onchange="toggleSelectAllRows(this)" class="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer" title="Marcar/Desmarcar todos">`;
-            headerTr.appendChild(thCheck);
-
-            headers.forEach(h => {
-                const th = document.createElement('th');
-                th.className = 'py-2 px-3';
-                th.innerText = h;
-                headerTr.appendChild(th);
-            });
-            thead.appendChild(headerTr);
+            document.getElementById('sheetRecordCount').innerText = `${sheetObj.rows.length} títulos`;
+            
+            let hTr = '<tr>';
+            sheetObj.headers.forEach(h => hTr += `<th class="py-2 px-3">${h}</th>`);
+            thead.innerHTML = hTr + '</tr>';
 
             sheetObj.rows.forEach(r => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50';
-
-                const tdCheck = document.createElement('td');
-                tdCheck.className = 'py-2 px-3 text-center border-t border-slate-100 w-10';
-                tdCheck.innerHTML = `<input type="checkbox" data-row-id="${r.id}" onchange="toggleRowSelection(${r.id}, this)" class="row-batch-checkbox w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer">`;
-                tr.appendChild(tdCheck);
-                
-                headers.forEach((h, idx) => {
-                    const td = document.createElement('td');
-                    td.className = 'py-2 px-3 border-t border-slate-100 text-slate-700';
-                    let val = r.data[idx];
-
-                    if (idx === r.vencimentoIdx) {
-                        val = formatDate(val);
-                    } 
-                    else if (idx === r.valorIdx) {
-                        val = r.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                        td.className += ' font-semibold text-slate-900';
+                let tr = '<tr>';
+                sheetObj.headers.forEach((h, idx) => {
+                    if (idx === r.statusIdx) {
+                        tr += `<td><select onchange="updateRowStatus('${sheetName}', ${r.id}, this.value)" class="text-xs font-bold rounded px-2 py-1 bg-sky-50 border"><option value="Programado" ${r.status==='Programado'?'selected':''}>Programado</option><option value="Aprovado" ${r.status==='Aprovado'?'selected':''}>Aprovado</option><option value="Aguardar" ${r.status==='Aguardar'?'selected':''}>Aguardar</option><option value="Negar" ${r.status==='Negar'?'selected':''}>Negar</option></select></td>`;
+                    } else if (idx === r.obsIdx) {
+                        tr += `<td><input type="text" value="${r.observacao || ''}" onblur="updateRowObs('${sheetName}', ${r.id}, this.value)" class="text-xs border rounded px-2 py-1 w-full"></td>`;
+                    } else {
+                        let val = r.data[idx];
+                        if (idx === r.vencimentoIdx) val = formatDate(val);
+                        if (idx === r.valorIdx) val = r.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                        tr += `<td class="py-2 px-3">${val || ''}</td>`;
                     }
-                    else if (idx === r.statusIdx) {
-                        const statusVal = r.status || 'Programado';
-                        let selectBg = 'bg-sky-100 text-sky-800 border-sky-300';
-                        if (statusVal === 'Aprovado') selectBg = 'bg-emerald-100 text-emerald-800 border-emerald-300';
-                        if (statusVal === 'Aguardar') selectBg = 'bg-amber-100 text-amber-800 border-amber-300';
-                        if (statusVal === 'Negar') selectBg = 'bg-rose-100 text-rose-800 border-rose-300';
-
-                        td.innerHTML = `
-                            <select onchange="updateRowStatus('${sheetName}', ${r.id}, this.value)" 
-                                class="text-xs font-bold rounded-lg px-2 py-1 border outline-none ${selectBg}">
-                                <option value="Programado" ${statusVal === 'Programado' ? 'selected' : ''}>Programado</option>
-                                <option value="Aprovado" ${statusVal === 'Aprovado' ? 'selected' : ''}>Aprovado</option>
-                                <option value="Aguardar" ${statusVal === 'Aguardar' ? 'selected' : ''}>Aguardar</option>
-                                <option value="Negar" ${statusVal === 'Negar' ? 'selected' : ''}>Negar</option>
-                            </select>
-                        `;
-                        tr.appendChild(td);
-                        return;
-                    }
-                    else if (idx === r.obsIdx) {
-                        const obsVal = r.observacao || '';
-                        td.innerHTML = `
-                            <input type="text" value="${obsVal}" placeholder="Adicionar observação..." 
-                                onblur="updateRowObs('${sheetName}', ${r.id}, this.value)"
-                                class="text-xs w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1 outline-none focus:ring-1 focus:ring-[#10b981] text-slate-800 font-medium">
-                        `;
-                        tr.appendChild(td);
-                        return;
-                    }
-
-                    td.innerText = val !== undefined ? val : '';
-                    tr.appendChild(td);
                 });
-                tbody.appendChild(tr);
+                tbody.innerHTML += tr + '</tr>';
             });
         }
     </script>
